@@ -7,7 +7,7 @@ param(
     $VmSize = "Standard_DS3_v2",
     [switch]
     $DeleteKubeAndHelm = $false,
-    $PubKeyFile
+    $PublicKey
 )
 
 
@@ -20,10 +20,9 @@ az group create -l $region -n $ResourceGroup
 
 if(Test-Path $Env:SystemDrive\$Env:HOMEPATH\.ssh\id_rsa.pub) {
     Write-Host "using existing ssh key"
-} elseif ($null -ne $PubKeyFile) {
-    Set-Content -Value $PubKeyFile -Path $PSScriptRoot\pubkey.file
+} elseif ($null -ne $PublicKey) {
     Write-Host "Using provided public key"
-    $createKey = "--ssh-key-value $PSScriptRoot\pubkey.file"
+    $createKey = "--ssh-key-value $PublicKey"
 }
 else {
     Write-Host "Will create a new ssh key"
