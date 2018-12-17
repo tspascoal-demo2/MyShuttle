@@ -6,7 +6,8 @@ param(
     $region = "westeurope",
     $VmSize = "Standard_DS3_v2",
     [switch]
-    $DeleteKubeAndHelm = $false
+    $DeleteKubeAndHelm = $false,
+    $PubKeyFile
 )
 
 
@@ -19,7 +20,12 @@ az group create -l $region -n $ResourceGroup
 
 if(Test-Path $Env:SystemDrive\$Env:HOMEPATH\.ssh\id_rsa.pub) {
     Write-Host "using existing ssh key"
-} else {
+} elseif ($null -ne $PubKeyFile) {
+    Set-Content -Value $PubKeyFile -Path $PSScriptRoot\pubkey.file
+    Write-Host "Using provided public key"
+    $createKey = "--ssh-key-value $PSScriptRoot\pubkey.file"
+}
+else {
     Write-Host "Will create a new ssh key"
     $createKey = "--generate-ssh-keys"
 }
@@ -29,7 +35,7 @@ $null=az aks create -n $ClusterName -g $ResourceGroup --node-count 1 $createKey 
 
 $null=az aks get-credentials -n $ClusterName -g $ResourceGroup
 
-kubectl apply -f helm-rbac.yml
+kubectl apply -f $PSScriptRoot\helm-rbac.yml
 kubectl create clusterrolebinding kubernetes-dashboard --clusterrole=cluster-admin --serviceaccount=kube-system:kubernetes-dashboard
 kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 
