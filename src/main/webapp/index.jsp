@@ -24,7 +24,7 @@
                                     
                                     <h4><label class="control-label" for="Password">Employee password</label></h4>
                                 <div class="form-control-div">
-                                    <input class="form-control" type="password" id="password" name="password" /><br />
+                                    <input class="form-control" type="text" id="password" name="password" /><br />
                                     </div>
                                 </div>
                             <div class="form-group pull-right login_submit">
