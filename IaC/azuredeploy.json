@@ -120,7 +120,7 @@
                             "name": "MyShuttleDb",
                             "type": "MySql",
                             "connectionString": 
-                                "[concat('jdbc:mysql://', reference(resourceId('Microsoft.DBforMySQL/servers',variables('serverName'))).fullyQualifiedDomainName,':3306/',variables('databaseName'),'?useSSL=true&requireSSL=false&autoReconnect=true&user=',parameters('administratorLogin'),'@', variables('serverName'),'&password=',parameters('administratorLoginPassword'))]"
+                                "[concat('jdbc:mysql://', reference(resourceId('Microsoft.DBforMySQL/servers',variables('serverName'))).fullyQualifiedDomainName,':3306/',variables('databaseName'),'?useSSL=true&requireSSL=false&autoReconnect=true&user=',parameters('administratorLogin'),'@', variables('serverName'),'&password=',uriComponent(parameters('administratorLoginPassword')))]"
                 
                         }
                     ]
