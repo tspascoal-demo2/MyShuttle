@@ -1,0 +1,125 @@
+trigger:
+- main
+
+ 
+pool:
+  vmImage: 'ubuntu-18.04'
+
+variables:
+  azureSubscription: azure
+  AzureSubscriptionId: '08a3cf8a-24d4-4e5b-9a27-c171509b1988'
+  ResourceGroupName: MyShuttle-$(Environment.Name)
+  dbServerName: $(siteName)-mysql
+  siteName: tipascoashuttle-$(Environment.Name)
+  dbUser: dbuser
+
+stages:
+  - stage: build
+
+    jobs:
+    - job: build
+      steps:
+      - task: Maven@3
+        inputs:
+          mavenPomFile: 'pom.xml'
+          options: '-B'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenOptions: '-DskipITs'
+          mavenAuthenticateFeed: true
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(build.sourcesdirectory)'
+          Contents: |
+            **/target/*.war 
+            *.sql 
+            IaC/**/*.*
+          TargetFolder: '$(build.artifactstagingdirectory)'
+
+      - task: PublishPipelineArtifact@1
+        inputs:
+          targetPath: '$(build.artifactstagingdirectory)'
+          publishLocation: 'pipeline'
+          artifact: drops
+
+  - stage: dev
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest' ))
+    dependsOn: build
+    jobs:
+      - deployment: 
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - task: AzureResourceManagerTemplateDeployment@3
+                inputs:
+                  deploymentScope: 'Resource Group'
+                  azureResourceManagerConnection: $(azureSubscription)
+                  subscriptionId: $(AzureSubscriptionId)
+                  action: 'Create Or Update Resource Group'
+                  resourceGroupName: '$(resourcegroupname)'
+                  location: 'East US'
+                  templateLocation: 'Linked artifact'
+                  csmFile: '$(pipeline.workspace)/drops/IaC/azuredeploy.json'
+                  overrideParameters: '-siteName "$(siteName)" -administratorLogin "$(dbUser)" -administratorLoginPassword "$(dbPassword)" -dbServerName "$(dbServerName)"'
+                  deploymentMode: 'Incremental'
+              - task: AzureMysqlDeployment@1
+                inputs:
+                  azureSubscription: $(azureSubscription)
+                  ServerName: $(dbServerName).mysql.database.azure.com
+                  SqlUsername: $(dbuser)@$(dbServerName)
+                  SqlPassword: $(dbPassword)
+                  SqlFile: $(pipeline.workspace)/drops/CreateMYSQLDB.sql
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  azureSubscription: $(azureSubscription)
+                  appType: 'webApp'
+                  WebAppName: $(siteName)
+                  packageForLinux: '$(pipeline.workspace)/**/*.war'
+                  TakeAppOfflineFlag: false
+
+  - stage: qa  
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest' ))    
+    dependsOn: dev
+    jobs:
+      - deployment: 
+        environment: qa
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+              - task: AzureResourceManagerTemplateDeployment@3
+                inputs:
+                  deploymentScope: 'Resource Group'
+                  azureResourceManagerConnection: $(azureSubscription)
+                  subscriptionId: $(AzureSubscriptionId)
+                  action: 'Create Or Update Resource Group'
+                  resourceGroupName: '$(resourcegroupname)'
+                  location: 'East US'
+                  templateLocation: 'Linked artifact'
+                  csmFile: '$(pipeline.workspace)/drops/IaC/azuredeploy.json'
+                  overrideParameters: '-siteName "$(siteName)" -administratorLogin "$(dbUser)" -administratorLoginPassword "$(dbPassword)" -dbServerName "$(dbServerName)"'
+                  deploymentMode: 'Incremental'
+              - task: AzureMysqlDeployment@1
+                inputs:
+                  azureSubscription: $(azureSubscription)
+                  ServerName: $(dbServerName).mysql.database.azure.com
+                  SqlUsername: $(dbuser)@$(dbServerName)
+                  SqlPassword: $(dbPassword)
+                  SqlFile: $(pipeline.workspace)/drops/CreateMYSQLDB.sql
+              - task: AzureRmWebAppDeployment@4
+                inputs:
+                  ConnectionType: 'AzureRM'
+                  azureSubscription: $(azureSubscription)
+                  appType: 'webApp'
+                  WebAppName: $(siteName)
+                  packageForLinux: '$(pipeline.workspace)/**/*.war'
+                  TakeAppOfflineFlag: false
+
