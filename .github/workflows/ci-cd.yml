@@ -29,6 +29,16 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml -DskipITs
 
+    - name: Publish Unit Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v1.3
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        check_name: Tests Results
+        files: '**/surefire-reports/TEST-*.xml'
+        report_individual_runs: true
+        deduplicate_classes_by_file_name: false
+
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v2.2.0
       with:
