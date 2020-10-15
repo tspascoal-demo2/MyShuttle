@@ -1,0 +1,34 @@
+name: CICD
+
+on:
+  pull_request:
+    types: [closed]
+    
+# WARNING this variable needs to have the same logic as the CICD for PR deployment
+env:
+  ResourceGroupName: MyShuttle-pr-${{ github.event.number }}
+    
+jobs:
+  destroyprenvironment:
+    name: Destroy PR Environment
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
+        uses: Azure/cli@v1.0.0
+        with:
+          inlineScript: |
+             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
+                echo creating ${{ env.ResourceGroupName }} resource group
+                az group delete --name "${{ env.ResourceGroupName }}" --yes
+             fi
+
+
+
+
+

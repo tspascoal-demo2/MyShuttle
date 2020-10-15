@@ -1,0 +1,165 @@
+
+name: CICD
+
+on:
+  push:
+    branches: [ demos/main ]
+  pull_request:
+    branches: [ demos/main ]
+
+env:
+  ResourceGroupName: MyShuttle-${{ github.job }}
+  SiteName: tspascoalmyshuttle-${{ github.job }}
+  dbServerName: tspascoalmyshuttle-${{ github.job }}-mysql
+  dbUser: dbuser
+  artifactsName: artifacts
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml -DskipITs
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v2.2.0
+      with:
+        path: |
+            **/target/*.war 
+            *.sql 
+            IaC/**/*.*
+        name: ${{ env.artifactsName }}
+
+  pr: 
+    if: github.event_name == 'pull_request'
+
+    runs-on: ubuntu-latest
+    name: deploy PR ephemeral environment
+
+    # WARNING: If you change some of these values you also need to update the pr-closed workflow
+    env:
+      ResourceGroupName: MyShuttle-pr
+
+    needs: [build]
+    
+    steps:
+      - run: |
+          dbPassword=$(</dev/urandom tr -dc '1234567890!*%@#$%abcdefghijklmnopqrstuvxzABCDEFGHIJKLMNOPQRSTUVXZ' | head -c20)
+          dbPassword=$dbPassword$(</dev/urandom tr -dc '!*%@#$%' | head -c4)
+          echo "dbPassword=$dbPassword" >> $GITHUB_ENV
+          echo "::add-mask::$dbPassword"
+        name: generate random db password
+
+      - run: |
+          prNumber=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV 
+          
+          # WARNING: if you change this, you also need to keep pr-closed workflow in sync
+          echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV 
+          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV 
+        name: update variables for dynamic environment
+
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v2.0.5
+        with:
+          path: artifacts
+          name: ${{ env.artifactsName }}
+
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
+        uses: Azure/cli@v1.0.0
+        with:
+          inlineScript: |
+             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
+                echo creating ${{ env.ResourceGroupName }} resource group
+                az group create --location "west europe" --name "${{ env.ResourceGroupName }}" --tags demo=true
+             fi
+
+      - name: Provision Infra using ARM Template
+        uses: Azure/arm-deploy@v1.0.1
+        id: deployARM
+        with:
+          scope: resourcegroup
+          subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
+          resourceGroupName: ${{ env.ResourceGroupName }}
+          template: ${{ env.artifactsName }}/IaC/azuredeploy.json
+          deploymentMode: Incremental
+          parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
+
+      - name: Azure MYSQL Deploy
+        uses: azure/mysql@v1
+        with:
+          server-name: ${{ steps.deployARM.outputs.databaseServer }}
+          connection-string: Server=${{ steps.deployARM.outputs.databaseServer }}; Uid=${{ env.dbUser }}@${{ env.dbServerName }}; Pwd=${{ env.dbPassword }}
+          sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
+
+      - name: Deploy Web App
+        uses: Azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.SiteName }}
+          package: ${{ env.artifactsName }}/target/*.war
+
+  dev:
+    if: github.ref == 'refs/heads/demos/main' 
+
+    runs-on: ubuntu-latest
+    name: deploy to DEV    
+    
+    needs: [build]
+
+    env:
+      dbPassword: ${{ secrets.dbPassword_dev }}
+
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        path: artifacts
+        name: ${{ env.artifactsName }}
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
+      uses: Azure/cli@v1.0.0
+      with:
+        inlineScript: |
+           if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
+              echo creating ${{ env.ResourceGroupName }} resource group
+              az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
+           fi
+    - name: Provision Infra using ARM Template
+      uses: Azure/arm-deploy@v1.0.1
+      id: deployARM
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
+        resourceGroupName: ${{ env.ResourceGroupName }}
+        template: ${{ env.artifactsName }}/IaC/azuredeploy.json
+        deploymentMode: Incremental
+        parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
+
+    - name: Azure MYSQL Deploy
+      uses: azure/mysql@v1
+      with:
+        server-name: ${{ steps.deployARM.outputs.databaseServer }}
+        connection-string: Server=${{ steps.deployARM.outputs.databaseServer }}; Uid=${{ env.dbUser }}@${{ env.dbServerName }}; Pwd=${{ env.dbPassword }}
+        sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
+
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.SiteName }}
+        package: ${{ env.artifactsName }}/target/*.war
