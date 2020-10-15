@@ -1,4 +1,4 @@
-name: CICD
+name: PR Closed
 
 on:
   pull_request:
@@ -23,7 +23,7 @@ jobs:
         uses: Azure/cli@v1.0.0
         with:
           inlineScript: |
-             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
+             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "true" ]; then
                 echo creating ${{ env.ResourceGroupName }} resource group
                 az group delete --name "${{ env.ResourceGroupName }}" --yes
              fi
