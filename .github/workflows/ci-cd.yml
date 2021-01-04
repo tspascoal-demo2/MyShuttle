@@ -27,7 +27,7 @@ jobs:
         java-version: 1.8
 
     - name: Build with Maven
-      run: mvn -B package --file pom.xml -DskipITs
+      run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1.3
@@ -38,6 +38,14 @@ jobs:
         files: '**/surefire-reports/TEST-*.xml'
         report_individual_runs: true
         deduplicate_classes_by_file_name: false
+
+    - name: cobertura-report
+      uses: 5monkeys/cobertura-action@v6
+      if: github.event_name == 'pull_request' && always()
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        path: '**/coverage.xml'
+        minimum_coverage: 5
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v2.2.0
