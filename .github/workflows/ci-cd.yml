@@ -111,7 +111,8 @@ jobs:
         uses: azure/mysql@v1
         with:
           server-name: ${{ steps.deployARM.outputs.databaseServer }}
-          connection-string: Server=${{ steps.deployARM.outputs.databaseServer }}; Uid=${{ env.dbUser }}@${{ env.dbServerName }}; Pwd=${{ env.dbPassword }}
+          username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
+          password: ${{ env.dbPassword }}
           sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
 
       - name: Deploy Web App
@@ -162,10 +163,11 @@ jobs:
         parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
 
     - name: Azure MYSQL Deploy
-      uses: azure/mysql@v1
+      uses: Azure/mysql@v1
       with:
         server-name: ${{ steps.deployARM.outputs.databaseServer }}
-        connection-string: Server=${{ steps.deployARM.outputs.databaseServer }}; Uid=${{ env.dbUser }}@${{ env.dbServerName }}; Pwd=${{ env.dbPassword }}
+        username: ${{ env.dbUser }}
+        password: ${{ env.dbPassword }}
         sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
 
     - name: Deploy Web App
