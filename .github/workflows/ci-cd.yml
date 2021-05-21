@@ -28,6 +28,15 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
+      
+    - uses: ShiftLeftSecurity/scan-action@master
+      env:
+        WORKSPACE: ""
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SCAN_AUTO_BUILD: true
+      with:
+        output: reports
+        type: credscan,java
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
