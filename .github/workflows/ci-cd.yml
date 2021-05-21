@@ -30,7 +30,7 @@ jobs:
       run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
 
     - name: Publish Unit Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1.3
+      uses: EnricoMi/publish-unit-test-result-action@v1
       if: always()
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -183,3 +183,61 @@ jobs:
       with:
         app-name: ${{ env.SiteName }}
         package: ${{ env.artifactsName }}/target/*.war
+        
+  qa:
+    if: github.ref == 'refs/heads/demos/main' 
+    
+    environment: QA
+
+    runs-on: ubuntu-latest
+    name: deploy to QA
+    
+    needs: [dev]
+
+    env:
+      dbPassword: ${{ secrets.dbPassword_dev }}
+
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        path: artifacts
+        name: ${{ env.artifactsName }}
+
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
+      uses: Azure/cli@v1.0.0
+      with:
+        inlineScript: |
+           if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
+              echo creating ${{ env.ResourceGroupName }} resource group
+              az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
+           fi
+    - name: Provision Infra using ARM Template
+      uses: Azure/arm-deploy@v1.0.1
+      id: deployARM
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
+        resourceGroupName: ${{ env.ResourceGroupName }}
+        template: ${{ env.artifactsName }}/IaC/azuredeploy.json
+        deploymentMode: Incremental
+        parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
+
+    - name: Azure MYSQL Deploy
+      uses: Azure/mysql@v1
+      with:
+        server-name: ${{ steps.deployARM.outputs.databaseServer }}
+        username: ${{ env.dbUser }}
+        password: ${{ env.dbPassword }}
+        sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
+
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.SiteName }}
+        package: ${{ env.artifactsName }}/target/*.war
+
