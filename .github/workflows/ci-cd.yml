@@ -174,7 +174,7 @@ jobs:
       uses: Azure/mysql@v1
       with:
         server-name: ${{ steps.deployARM.outputs.databaseServer }}
-        username: ${{ env.dbUser }}
+        username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
         password: ${{ env.dbPassword }}
         sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
 
@@ -231,7 +231,7 @@ jobs:
       uses: Azure/mysql@v1
       with:
         server-name: ${{ steps.deployARM.outputs.databaseServer }}
-        username: ${{ env.dbUser }}
+        username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
         password: ${{ env.dbPassword }}
         sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
 
