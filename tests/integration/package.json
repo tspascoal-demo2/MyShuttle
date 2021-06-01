@@ -1,0 +1,23 @@
+{
+  "name": "myshuttle-integration-tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "expect": "^27.0.2",
+    "jest": "^27.0.3",
+    "jest-junit": "^12.1.0",
+    "playwright": "^1.11.1"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Tiago Pascoal",
+  "license": "ISC",
+  "jest-junit": {
+    "outputDirectory": "reports",
+    "outputName": "junit.xml",
+    "uniqueOutputName": "false"
+  }
+}

@@ -28,7 +28,7 @@
                                     </div>
                                 </div>
                             <div class="form-group pull-right login_submit">
-                                <input type="submit" value="Log in" class="btn btn-primary" />
+                                <input type="submit" id="login-button" value="Log in" class="btn btn-primary" />
                             </div>
                         </form>
                     </div>

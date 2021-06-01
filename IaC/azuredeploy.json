@@ -133,6 +133,7 @@
             "location": "[parameters('location')]",
             "name": "[variables('serverName')]",
             "properties": {
+                "createMode": "Default",
                 "version": "[parameters('mysqlVersion')]",
                 "administratorLogin": "[parameters('administratorLogin')]",
                 "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
