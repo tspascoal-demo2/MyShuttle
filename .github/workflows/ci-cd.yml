@@ -32,7 +32,7 @@ jobs:
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
+      if: always() && github.actor != 'dependabot[bot]'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         check_name: Tests Results
@@ -42,7 +42,7 @@ jobs:
 
     - name: cobertura-report
       uses: 5monkeys/cobertura-action@v6
-      if: github.event_name == 'pull_request' && always()
+      if: github.event_name == 'pull_request' && always() && github.actor != 'dependabot[bot]'
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         path: '**/coverage.xml'
@@ -58,7 +58,7 @@ jobs:
         name: ${{ env.artifactsName }}
 
   pr: 
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
     name: deploy PR ephemeral environment
