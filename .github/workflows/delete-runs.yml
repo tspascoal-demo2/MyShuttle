@@ -1,4 +1,17 @@
 name: Delete old workflow runs
+
+permissions:
+  actions: write
+  checks: none
+  contents: none
+  deployments: none
+  issues: none
+  packages: none
+  pull-requests: none
+  repository-projects: none
+  security-events: none
+  statuses: none
+  
 on:
   workflow_dispatch:
     inputs:
