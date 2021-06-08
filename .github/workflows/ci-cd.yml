@@ -83,7 +83,8 @@ jobs:
           
           # WARNING: if you change this, you also need to keep pr-closed workflow in sync
           echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV 
-          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV 
+          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV           
+          echo "prNumber=$prNumber" >> $GITHUB_ENV 
         name: update variables for dynamic environment
 
       - name: Download Build Artifact
@@ -106,7 +107,7 @@ jobs:
              fi
 
       - name: Provision Infra using ARM Template
-        uses: Azure/arm-deploy@v1.0.1
+        uses: Azure/arm-deploy@main
         id: deployARM
         with:
           scope: resourcegroup
@@ -130,6 +131,14 @@ jobs:
         with:
           app-name: ${{ env.SiteName }}
           package: ${{ env.artifactsName }}/target/*.war
+          
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: url
+          message: |
+            :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deployed for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
+
+            Don't worry we will delete it once this Pull request is closed. :fire:
 
       ## Integration tests
       - uses: actions/checkout@v2
@@ -191,7 +200,7 @@ jobs:
               az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
            fi
     - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@v1.0.1
+      uses: Azure/arm-deploy@main
       id: deployARM
       with:
         scope: resourcegroup
@@ -277,7 +286,7 @@ jobs:
               az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
            fi
     - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@v1.0.1
+      uses: Azure/arm-deploy@main
       id: deployARM
       with:
         scope: resourcegroup
@@ -329,5 +338,3 @@ jobs:
       with:
         path: ${{ env.integration_tests_path}}/screenshots/**
         name: screenshots
-
-
