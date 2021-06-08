@@ -6,6 +6,12 @@ on:
         description: 'Number of days.'
         required: true
         default: 90
+      mininum_runs:
+        description: 'minimum runs to keep'
+        required: true
+        default: 6
+
+        
 
 jobs:
   del_runs:
@@ -15,3 +21,4 @@ jobs:
         uses: Mattraks/delete-workflow-runs@main
         with:
           retain_days: ${{ github.event.inputs.days }}
+          keep_minimum_runs:  ${{ github.event.inputs.mininum_runs }}
