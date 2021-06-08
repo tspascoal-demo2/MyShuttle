@@ -107,7 +107,7 @@ jobs:
              fi
 
       - name: Provision Infra using ARM Template
-        uses: Azure/arm-deploy@v1.0.1
+        uses: Azure/arm-deploy@main
         id: deployARM
         with:
           scope: resourcegroup
@@ -200,7 +200,7 @@ jobs:
               az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
            fi
     - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@v1.0.1
+      uses: Azure/arm-deploy@main
       id: deployARM
       with:
         scope: resourcegroup
@@ -286,7 +286,7 @@ jobs:
               az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
            fi
     - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@v1.0.1
+      uses: Azure/arm-deploy@main
       id: deployARM
       with:
         scope: resourcegroup
@@ -338,5 +338,3 @@ jobs:
       with:
         path: ${{ env.integration_tests_path}}/screenshots/**
         name: screenshots
-
-
