@@ -1,4 +1,4 @@
-name: PR Closed
+name: PR Closed Cleanup
 
 on:
   pull_request:
@@ -20,7 +20,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
-        uses: Azure/cli@v1.0.0
+        uses: Azure/cli@v1
         with:
           inlineScript: |
              if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "true" ]; then
