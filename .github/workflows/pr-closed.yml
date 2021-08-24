@@ -24,7 +24,7 @@ jobs:
         with:
           inlineScript: |
              if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "true" ]; then
-                echo deleting ${{ env.ResourceGroupName }} resource group (non blocking)
+                echo 'deleting ${{ env.ResourceGroupName }} resource group (non blocking)'
                 az group delete --name "${{ env.ResourceGroupName }}" --yes --no-wait
              fi
 
