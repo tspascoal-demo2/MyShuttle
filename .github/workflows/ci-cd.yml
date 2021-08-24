@@ -136,7 +136,7 @@ jobs:
         with:
           header: url
           message: |
-            :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deployed for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
+            :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deploy for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
 
             Don't worry we will delete it once this Pull request is closed. :fire:
 
