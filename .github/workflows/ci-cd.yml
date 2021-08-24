@@ -41,8 +41,8 @@ jobs:
         deduplicate_classes_by_file_name: false
 
     - name: cobertura-report
-      uses: 5monkeys/cobertura-action@v6
-      if: github.event_name == 'pull_request' && always() && github.actor != 'dependabot[bot]'
+      uses: tspascoal/cobertura-action@master
+      if: always() && github.actor != 'dependabot[bot]'
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         path: '**/coverage.xml'
