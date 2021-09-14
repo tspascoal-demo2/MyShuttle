@@ -93,6 +93,7 @@ runs:
       # Workaround to force publishing of results even if tests fail
       # We will fail the workflow later based on testsResult
       npm run test || result=$? || 0
+      echo "Test Result [$result]"
       echo "::set-output name=testsResult::$result"
     working-directory: ${{ env.integration_tests_path}}
 
@@ -115,7 +116,7 @@ runs:
   - name: fail workflow if tests failed
     shell: bash
     run: |
-      if [ '${{ steps.integrationtests.outputs.testsResult }}' != '0' ]; then
+      if [ '${{ steps.integrationtests.outputs.testsResult }}' != '' ] && [ '${{ steps.integrationtests.outputs.testsResult }}' != '0' ]; then
         echo Failed tests
         exit 1
       fi
