@@ -29,7 +29,7 @@ describe('login', () => {
     await page.goto(baseUrl);
   
     await page.fill('input[name="email"]', 'barney');
-    await page.fill('input[name="password"]', 'barneypassword');
+    await page.fill('input[name="password"]', 'INVALIDPASSWORD');
   
     await page.click('id=login-button');
     expect(await page.url()).toBe(`${baseUrl}/login`);
