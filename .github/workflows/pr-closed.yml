@@ -28,6 +28,14 @@ jobs:
                 az group delete --name "${{ env.ResourceGroupName }}" --yes --no-wait
              fi
 
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always()
+        with:
+          header: url
+          append: true
+          message: |
+            :tada: Sorry, the environment has now been destroyed since the PR has been closed. :scissors:
+
 
 
 
