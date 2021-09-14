@@ -95,7 +95,7 @@ jobs:
         with:
           dbServerName: ${{ env.dbServerName }}
           dbUser: ${{ env.dbUser }}
-          dbPassword: ${{ env.dbPassword_dev }}
+          dbPassword: ${{ env.dbPassword }}
           ResourceGroupName: ${{ env.ResourceGroupName }}
           artifactsName: ${{ env.artifactsName }}
           SiteName: ${{ env.SiteName }}
