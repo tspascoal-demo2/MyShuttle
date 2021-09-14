@@ -1,0 +1,107 @@
+description: |
+  Provisions and deploys My Shuttle to a web app (with a mysql db)
+  Runs integration tests
+
+inputs:
+  dbServerName:
+    description: mysql servername
+    required: true
+  dbUser:
+    description: mysql username
+    required: true
+  dbPassword: 
+    description: mysql password
+    required: true
+  ResourceGroupName: 
+    description: Resource group name
+    required: true
+  artifactsName:
+    description: artifacts name
+    required: true
+  SiteName:
+    description: WebApp name
+    required: true
+  AzureCredentials:
+    description: Azure credentials
+    required: true
+
+outputs:
+  webapp-url:
+    description: Deployed web app url
+    value: ${{ steps.deployWebApp.outputs.webapp-url }}
+
+runs:
+  using: "composite"
+  steps:
+  - name: Download Build Artifact
+    uses: actions/download-artifact@v2.0.5
+    with:
+      path: artifacts
+      name: ${{ inputs.artifactsName }}
+
+  - uses: azure/login@v1
+    with:
+      creds: ${{ inputs.AzureCredentials }}
+
+  - name: Create Resource Group ${{ inputs.ResourceGroupName }} if not exists 
+    uses: Azure/cli@v1.0.0
+    with:
+      inlineScript: |
+          if [ "$(az group exists --name ${{ inputs.ResourceGroupName }})" = "false" ]; then
+            echo creating ${{ inputs.ResourceGroupName }} resource group
+            az group create --location "west europe" --name ${{ inputs.ResourceGroupName }} --tags demo=true
+          fi
+  - name: Provision Infra using ARM Template
+    uses: Azure/arm-deploy@main
+    id: deployARM
+    with:
+      scope: resourcegroup
+      subscriptionId: ${{ fromJSON(inputs.AzureCredentials).subscriptionId }}
+      resourceGroupName: ${{ inputs.ResourceGroupName }}
+      template: ${{ inputs.artifactsName }}/IaC/azuredeploy.json
+      deploymentMode: Incremental
+      parameters: siteName="${{ inputs.SiteName }}" administratorLogin="${{ inputs.dbUser }}" administratorLoginPassword="${{ inputs.dbPassword }}" dbServerName="${{ inputs.dbServerName }}" 
+
+  - name: Azure MYSQL Deploy
+    uses: Azure/mysql@v1
+    with:
+      server-name: ${{ steps.deployARM.outputs.databaseServer }}
+      username: ${{ inputs.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
+      password: ${{ inputs.dbPassword }}
+      sql-file: ${{ inputs.artifactsName }}/CreateMYSQLDB.sql
+
+  - name: Deploy Web App
+    uses: Azure/webapps-deploy@v2
+    id: deployWebApp
+    with:
+      app-name: ${{ inputs.SiteName }}
+      package: ${{ inputs.artifactsName }}/target/*.war
+
+  ## Integration tests
+  - uses: actions/setup-node@v1
+  - uses: microsoft/playwright-github-action@v1
+  
+  - name: install playwright dependencies
+    shell: bash
+    run: npm ci
+    working-directory: ${{ env.integration_tests_path}}
+
+  - name: run integration tests
+    shell: bash
+    run: npm run test      
+    working-directory: ${{ env.integration_tests_path}}
+    env:
+      BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
+
+  - name: Publish Integration Test Results
+    uses: EnricoMi/publish-unit-test-result-action@v1
+    with:
+      files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
+      check_name: Integration Tests ${{ github.job }} 
+
+  - name: Upload Build Artifact
+    uses: actions/upload-artifact@v2
+    with:
+      path: ${{ env.integration_tests_path}}/screenshots/**
+      name: screenshots-${{ github.job }}
+

@@ -87,87 +87,28 @@ jobs:
           echo "prNumber=$prNumber" >> $GITHUB_ENV 
         name: update variables for dynamic environment
 
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v2.0.5
-        with:
-          path: artifacts
-          name: ${{ env.artifactsName }}
+      # we need the local actions and integration tests
+      - uses: actions/checkout@v2
 
-      - uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
-        uses: Azure/cli@v1.0.0
-        with:
-          inlineScript: |
-             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
-                echo creating ${{ env.ResourceGroupName }} resource group
-                az group create --location "west europe" --name "${{ env.ResourceGroupName }}" --tags demo=true
-             fi
-
-      - name: Provision Infra using ARM Template
-        uses: Azure/arm-deploy@main
-        id: deployARM
-        with:
-          scope: resourcegroup
-          subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
-          resourceGroupName: ${{ env.ResourceGroupName }}
-          template: ${{ env.artifactsName }}/IaC/azuredeploy.json
-          deploymentMode: Incremental
-          parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
-
-      - name: Azure MYSQL Deploy
-        uses: azure/mysql@v1
-        with:
-          server-name: ${{ steps.deployARM.outputs.databaseServer }}
-          username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
-          password: ${{ env.dbPassword }}
-          sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
-
-      - name: Deploy Web App
-        uses: Azure/webapps-deploy@v2
+      - uses: ./actions/provision-and-deploy
         id: deployWebApp
         with:
-          app-name: ${{ env.SiteName }}
-          package: ${{ env.artifactsName }}/target/*.war
+          dbServerName: ${{ env.dbServerName }}
+          dbUser: ${{ env.dbUser }}
+          dbPassword: ${{ env.dbPassword }}
+          ResourceGroupName: ${{ env.ResourceGroupName }}
+          artifactsName: ${{ env.artifactsName }}
+          SiteName: ${{ env.SiteName }}
+          AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
           
       - uses: marocchino/sticky-pull-request-comment@v2
+        if: always()
         with:
           header: url
           message: |
             :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deploy for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
 
             Don't worry we will delete it once this Pull request is closed. :fire:
-
-      ## Integration tests
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - uses: microsoft/playwright-github-action@v1
-      
-      - name: install playwright dependencies
-        run: npm ci
-        working-directory: ${{ env.integration_tests_path}}
-
-      - name: run integration tests
-        run: npm run test      
-        working-directory: ${{ env.integration_tests_path}}
-        env:
-          BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
-
-      - name: Publish Integration Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: always()
-        with:
-          files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
-          check_name: Integration Tests ${{ github.job }}
-          
-      - name: Upload Build Artifact
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          path: ${{ env.integration_tests_path}}/screenshots/**
-          name: screenshots
 
   analyze:
     name: Security Scanning
@@ -202,82 +143,20 @@ jobs:
     
     needs: [build]
 
-    env:
-      dbPassword: ${{ secrets.dbPassword_dev }}
-
     steps:
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v2.0.5
-      with:
-        path: artifacts
-        name: ${{ env.artifactsName }}
-
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
-      uses: Azure/cli@v1.0.0
-      with:
-        inlineScript: |
-           if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
-              echo creating ${{ env.ResourceGroupName }} resource group
-              az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
-           fi
-    - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@main
-      id: deployARM
-      with:
-        scope: resourcegroup
-        subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
-        resourceGroupName: ${{ env.ResourceGroupName }}
-        template: ${{ env.artifactsName }}/IaC/azuredeploy.json
-        deploymentMode: Incremental
-        parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
-
-    - name: Azure MYSQL Deploy
-      uses: Azure/mysql@v1
-      with:
-        server-name: ${{ steps.deployARM.outputs.databaseServer }}
-        username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
-        password: ${{ env.dbPassword }}
-        sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
-
-    - name: Deploy Web App
-      uses: Azure/webapps-deploy@v2
-      id: deployWebApp
-      with:
-        app-name: ${{ env.SiteName }}
-        package: ${{ env.artifactsName }}/target/*.war
-
-    ## Integration tests
+    # we need the local actions and integration tests
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - uses: microsoft/playwright-github-action@v1
-    
-    - name: install playwright dependencies
-      run: npm ci
-      working-directory: ${{ env.integration_tests_path}}
 
-    - name: run integration tests
-      run: npm run test      
-      working-directory: ${{ env.integration_tests_path}}
-      env:
-        BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
-
-    - name: Publish Integration Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
+    - uses: ./actions/provision-and-deploy
       with:
-        files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
-        check_name: Integration Tests ${{ github.job }} 
+        dbServerName: ${{ env.dbServerName }}
+        dbUser: ${{ env.dbUser }}
+        dbPassword: ${{ env.dbPassword_dev }}
+        ResourceGroupName: ${{ env.ResourceGroupName }}
+        artifactsName: ${{ env.artifactsName }}
+        SiteName: ${{ env.SiteName }}
+        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        path: ${{ env.integration_tests_path}}/screenshots/**
-        name: screenshots
   qa:
     if: github.ref == 'refs/heads/demos/main' 
     
@@ -288,78 +167,15 @@ jobs:
     
     needs: [dev]
 
-    env:
-      dbPassword: ${{ secrets.dbPassword_dev }}
-
     steps:
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v2.0.5
-      with:
-        path: artifacts
-        name: ${{ env.artifactsName }}
 
-    - uses: azure/login@v1
+    - uses: ./actions/provision-and-deploy
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        dbServerName: ${{ env.dbServerName }}
+        dbUser: ${{ env.dbUser }}
+        dbPassword: ${{ env.dbPassword_dev }}
+        ResourceGroupName: ${{ env.ResourceGroupName }}
+        artifactsName: ${{ env.artifactsName }}
+        SiteName: ${{ env.SiteName }}
+        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Create Resource Group ${{ env.ResourceGroupName }} if not exists 
-      uses: Azure/cli@v1.0.0
-      with:
-        inlineScript: |
-           if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "false" ]; then
-              echo creating ${{ env.ResourceGroupName }} resource group
-              az group create --location "west europe" --name ${{ env.ResourceGroupName }} --tags demo=true
-           fi
-    - name: Provision Infra using ARM Template
-      uses: Azure/arm-deploy@main
-      id: deployARM
-      with:
-        scope: resourcegroup
-        subscriptionId: ${{ fromJSON(secrets.AZURE_CREDENTIALS).subscriptionId }}
-        resourceGroupName: ${{ env.ResourceGroupName }}
-        template: ${{ env.artifactsName }}/IaC/azuredeploy.json
-        deploymentMode: Incremental
-        parameters: siteName="${{ env.SiteName }}" administratorLogin="${{ env.dbUser }}" administratorLoginPassword="${{ env.dbPassword }}" dbServerName="${{ env.dbServerName }}" 
-
-    - name: Azure MYSQL Deploy
-      uses: Azure/mysql@v1
-      with:
-        server-name: ${{ steps.deployARM.outputs.databaseServer }}
-        username: ${{ env.dbUser }}@${{ steps.deployARM.outputs.databaseServer }}
-        password: ${{ env.dbPassword }}
-        sql-file: ${{ env.artifactsName }}/CreateMYSQLDB.sql
-
-    - name: Deploy Web App
-      uses: Azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.SiteName }}
-        package: ${{ env.artifactsName }}/target/*.war
-
-    ## Integration tests
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - uses: microsoft/playwright-github-action@v1
-    
-    - name: install playwright dependencies
-      run: npm ci
-      working-directory: ${{ env.integration_tests_path}}
-
-    - name: run integration tests
-      run: npm run test      
-      working-directory: ${{ env.integration_tests_path}}
-      env:
-        BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
-
-    - name: Publish Integration Test Results
-      uses: EnricoMi/publish-unit-test-result-action@v1
-      if: always()
-      with:
-        files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
-        check_name: Integration Tests ${{ github.job }} 
-
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v2
-      if: always()
-      with:
-        path: ${{ env.integration_tests_path}}/screenshots/**
-        name: screenshots
