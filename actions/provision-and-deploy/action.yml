@@ -115,8 +115,7 @@ runs:
   - name: fail workflow if tests failed
     shell: bash
     run: |
-      if [ '${{ steps.integrationtests.outputs.testsResult' != '0' ]; then
+      if [ '${{ steps.integrationtests.outputs.testsResult }}' != '0' ]; then
         echo Failed tests
         exit 1
       fi
-
