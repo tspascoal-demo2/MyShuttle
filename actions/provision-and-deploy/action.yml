@@ -103,5 +103,5 @@ runs:
     uses: actions/upload-artifact@v2
     with:
       path: ${{ env.integration_tests_path}}/screenshots/**
-      name: screenshots
+      name: screenshots-${{ github.job }}
 
