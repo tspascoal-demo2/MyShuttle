@@ -102,6 +102,7 @@ jobs:
           AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
           
       - uses: marocchino/sticky-pull-request-comment@v2
+        if: always()
         with:
           header: url
           message: |
