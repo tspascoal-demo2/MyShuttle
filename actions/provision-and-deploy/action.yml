@@ -88,8 +88,14 @@ runs:
 
   - name: run integration tests
     shell: bash
-    run: npm run test      
+    id: integrationtests
+    run: |
+      # Workaround to force publishing of results even if tests fail
+      # We will fail the workflow later based on testsResult
+      npm run test || result=$? || 0
+      echo "::set-output name=testsResult::$result"
     working-directory: ${{ env.integration_tests_path}}
+
     env:
       BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
@@ -104,4 +110,13 @@ runs:
     with:
       path: ${{ env.integration_tests_path}}/screenshots/**
       name: screenshots-${{ github.job }}
+
+  # Fail workflow if tests have failed
+  - name: fail workflow if tests failed
+    shell: bash
+    run:
+      if [ '${{ steps.integrationtests.outputs.testsResult' != '0' ]; then
+        echo Failed tests
+        exit 1
+      fi
 
