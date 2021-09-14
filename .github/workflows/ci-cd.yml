@@ -151,7 +151,7 @@ jobs:
       with:
         dbServerName: ${{ env.dbServerName }}
         dbUser: ${{ env.dbUser }}
-        dbPassword: ${{ env.dbPassword_dev }}
+        dbPassword: ${{ secrets.dbPassword_dev }}
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
@@ -173,9 +173,8 @@ jobs:
       with:
         dbServerName: ${{ env.dbServerName }}
         dbUser: ${{ env.dbUser }}
-        dbPassword: ${{ env.dbPassword_dev }}
+        dbPassword: ${{ secrets.dbPassword_dev }}
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
         AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-
