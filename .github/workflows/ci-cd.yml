@@ -65,6 +65,10 @@ jobs:
     runs-on: ubuntu-latest
     name: deploy PR ephemeral environment
 
+    environment:
+      name: ephemeral-prs
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}
+
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
     env:
       ResourceGroupName: MyShuttle-pr
@@ -144,7 +148,11 @@ jobs:
 
     runs-on: ubuntu-latest
     name: deploy to DEV    
-    
+
+    environment:
+      name: DEV
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}
+
     needs: [build]
 
     steps:
@@ -152,6 +160,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - uses: ./actions/provision-and-deploy
+      id: deployWebApp
       with:
         dbServerName: ${{ env.dbServerName }}
         dbUser: ${{ env.dbUser }}
@@ -164,7 +173,9 @@ jobs:
   qa:
     if: github.ref == 'refs/heads/demos/main' 
     
-    environment: QA
+    environment:
+      name: QA
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}
 
     runs-on: ubuntu-latest
     name: deploy to QA
@@ -176,6 +187,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - uses: ./actions/provision-and-deploy
+      id: deployWebApp
       with:
         dbServerName: ${{ env.dbServerName }}
         dbUser: ${{ env.dbUser }}
