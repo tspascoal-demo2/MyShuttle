@@ -67,7 +67,7 @@ jobs:
 
     environment:
       name: ephemeral-prs
-      url: ${{ steps.deployWebApp.outputs.webapp-url }}
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
     env:
@@ -151,7 +151,7 @@ jobs:
 
     environment:
       name: DEV
-      url: ${{ steps.deployWebApp.outputs.webapp-url }}
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
     needs: [build]
 
@@ -175,7 +175,7 @@ jobs:
     
     environment:
       name: QA
-      url: ${{ steps.deployWebApp.outputs.webapp-url }}
+      url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
     runs-on: ubuntu-latest
     name: deploy to QA
