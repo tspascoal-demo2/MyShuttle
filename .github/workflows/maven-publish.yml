@@ -23,6 +23,6 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -DskipTests=true --batch-mode
+      run: mvn deploy -DskipTests=true --batch-mode --no-transfer-progress
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
