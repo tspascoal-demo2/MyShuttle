@@ -139,7 +139,7 @@
     <repository>
       <id>github</id>
       <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/tspascoal-demo2/DemoMyShuttle</url>
+      <url>https://maven.pkg.github.com/tspascoal-demo2/MyShuttle</url>
     </repository>
   </distributionManagement>
 </project>
