@@ -146,8 +146,9 @@ jobs:
   dev:
     if: github.ref == 'refs/heads/demos/main' 
 
+    name: deploy to DEV
     runs-on: ubuntu-latest
-    name: deploy to DEV    
+    concurrency: dev
 
     environment:
       name: DEV
@@ -172,14 +173,15 @@ jobs:
 
   qa:
     if: github.ref == 'refs/heads/demos/main' 
+
+    name: deploy to QA
+    runs-on: ubuntu-latest
+    concurrency: qa
     
     environment:
       name: QA
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
-    runs-on: ubuntu-latest
-    name: deploy to QA
-    
     needs: [dev]
 
     steps:
