@@ -66,6 +66,7 @@ jobs:
     name: deploy PR ephemeral environment
 
     environment:
+      # If you change this, you also need to update the pr-closed.yml workflow
       name: pull-request-${{ github.event.pull_request.number }}
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
