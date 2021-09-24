@@ -66,7 +66,8 @@ jobs:
     name: deploy PR ephemeral environment
 
     environment:
-      name: ephemeral-prs
+      # If you change this, you also need to update the pr-closed.yml workflow
+      name: pull-request-${{ github.event.pull_request.number }}
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
@@ -84,7 +85,7 @@ jobs:
         name: generate random db password
 
       - run: |
-          prNumber=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          prNumber=${{github.event.pull_request.number}}
           echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV 
           
           # WARNING: if you change this, you also need to keep pr-closed workflow in sync
@@ -107,12 +108,15 @@ jobs:
           SiteName: ${{ env.SiteName }}
           AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
           
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - name: add comment to PR with environment info
+        uses: marocchino/sticky-pull-request-comment@v2
         if: always()
         with:
           header: url
           message: |
             :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deploy for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
+
+            You can also track the deployments for this environment in [Pull request ${{ github.event.pull_request.number }} environment](/${{github.repository}}/deployments/activity_log?environment=pull-request-${{ github.event.pull_request.number }})
 
             Don't worry we will delete it once this Pull request is closed. :fire:
 
