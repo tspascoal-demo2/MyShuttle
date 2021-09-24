@@ -115,6 +115,8 @@ jobs:
           message: |
             :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deploy for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
 
+            You can also track the deployments for this environment in [Pull request pull-request-${{ github.event.pull_request.number }} environment](/deployments/activity_log?environment=pull-request-${{ github.event.pull_request.number }})
+
             Don't worry we will delete it once this Pull request is closed. :fire:
 
   analyze:
