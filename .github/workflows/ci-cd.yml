@@ -66,7 +66,7 @@ jobs:
     name: deploy PR ephemeral environment
 
     environment:
-      name: ephemeral-prs
+      name: pull-request-${{ github.event.pull_request.number }}
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
@@ -84,7 +84,7 @@ jobs:
         name: generate random db password
 
       - run: |
-          prNumber=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          prNumber=${{github.event.pull_request.number}}
           echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV 
           
           # WARNING: if you change this, you also need to keep pr-closed workflow in sync
