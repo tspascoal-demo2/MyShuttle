@@ -18,10 +18,10 @@ This is a sample application that is not intended to show any programming best p
   - Provisions an isolated ephemeral environment (which is destroyed when the pull request is closed/completed)
   - Runs integrations tests on the provisioned environment using [Playwright](https://playwright.dev/)
   - Tests (both unit and function tests) results are published as PR comments (and PR checks) as well as code coverage reports.
-- [Composite Actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) - Uses composite actions as a way to have a template and to reduce repetitive steps. The composite action, provisions, deploys and runs integration tests. The composite actions are stored in the [actions](actions) folder. The implementation of this action is certainly debeatable since it downloads artifacts, which should be a responsability of the workflow. [Here](https://colinsalmcorner.com/github-composite-actions) is a nice writeup of the pros and cons of using composite actions.
+- [Composite Actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) - Uses composite actions as a way to have a template and to reduce repetitive steps. The composite action provisions, deploys and runs integration tests. The composite actions are stored in the [actions](actions) folder. The implementation of this action is certainly debeatable since it downloads artifacts, which should be a responsibility of the workflow. [Here](https://colinsalmcorner.com/github-composite-actions) is a nice writeup of the pros and cons of using composite actions.
 - Packages - When a [release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) is created a maven package is published to [GitHub packages](https://github.com/features/packages)
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
-[Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
+- [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group).
 
@@ -43,5 +43,5 @@ I have created some [instructions](./docs/configuring.md) if you want to run thi
 
 It requires GitHub Enterprise to use [environments](https://docs.github.com/en/actions/deployment/environments) and manual approvals. On a personal repo you won't see environments and approvals but everyhing else works without making changes.
 
-The deletion of the ephemeral environment when the Pull request is closed requires you to create an app (or use a PAT token and changing the [or-closed](.github/workflows/pr-closed.yml) workfklow to use it instead of the app)
+The deletion of the ephemeral environment when the Pull request is closed requires you to create an app (or use a PAT token and changing the [pr-closed](.github/workflows/pr-closed.yml) workflow to use it instead of the app)
 
