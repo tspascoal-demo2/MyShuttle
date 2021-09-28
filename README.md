@@ -23,13 +23,13 @@ This is a sample application that is not intended to show any programming best p
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 
-![CI/CD Workflow](docs/ci-cd-workflow.png)
+![CI/CD Workflow](./docs/ci-cd-workflow.png)
 
 It uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group).
 
 ## Trying this out
 
-I have created some [instructions](docs/configuring.md) if you want to run this sample  on your own repo.
+I have created some [instructions](./docs/configuring.md) if you want to run this sample  on your own repo.
 
 > Although you can fork the repository, if you want to try the enterprise features I recommend that you do a clone and push to your organization. While you can fork a repository into an organization you can **only** have a fork per target organization, so it is recommended to clone the repository into your organization in order to allow more people on _your_ organization to try it out.
 
