@@ -6,7 +6,7 @@ on:
     
 # WARNING this variable needs to have the same logic as the CICD for PR deployment
 env:
-  ResourceGroupName: MyShuttle-pr-${{ github.event.number }}
+  ResourceGroupName: ${{secrets.RG_PREFIX}}-pr-${{ github.event.number }}
     
 jobs:
   destroyprenvironment:

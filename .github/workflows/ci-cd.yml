@@ -8,9 +8,9 @@ on:
     branches: [ demos/main ]
 
 env:
-  ResourceGroupName: MyShuttle-${{ github.job }}
-  SiteName: tspascoalmyshuttle-${{ github.job }}
-  dbServerName: tspascoalmyshuttle-${{ github.job }}-mysql
+  ResourceGroupName: ${{secrets.RG_PREFIX}}-${{ github.job }}
+  SiteName: ${{secrets.PREFIX}}-${{ github.job }}
+  dbServerName: ${{secrets.PREFIX}}-${{ github.job }}-mysql
   dbUser: dbuser
   artifactsName: artifacts
   integration_tests_path: ${{ github.workspace}}/tests/integration
@@ -72,7 +72,7 @@ jobs:
 
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
     env:
-      ResourceGroupName: MyShuttle-pr
+      ResourceGroupName: ${{secrets.RG_PREFIX}}-pr
 
     needs: [build]
     
