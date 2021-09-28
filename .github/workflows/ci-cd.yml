@@ -7,10 +7,13 @@ on:
   pull_request:
     branches: [ demos/main ]
 
+# Use github.event.repository.id to have a unique value per repo to avoid conflicts of multiple
+# repositories deploying this sample. It's kind of hackish, but works for sample purposes and 
+# avoids manual replacements by users. Under normal circumstances, you would use a constant.
 env:
-  ResourceGroupName: MyShuttle-${{ github.job }}
-  SiteName: tspascoalmyshuttle-${{ github.job }}
-  dbServerName: tspascoalmyshuttle-${{ github.job }}-mysql
+  ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-${{ github.job }}
+  SiteName: MyShuttle-${{ github.event.repository.id }}-${{ github.job }}
+  dbServerName: MyShuttle-${{ github.event.repository.id }}-${{ github.job }}-mysql
   dbUser: dbuser
   artifactsName: artifacts
   integration_tests_path: ${{ github.workspace}}/tests/integration
@@ -72,7 +75,7 @@ jobs:
 
     # WARNING: If you change some of these values you also need to update the pr-closed workflow
     env:
-      ResourceGroupName: MyShuttle-pr
+      ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-pr
 
     needs: [build]
     
