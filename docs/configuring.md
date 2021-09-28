@@ -2,6 +2,8 @@
 
 In order to run the workflows you need to configure these things before hand.
 
+> If you forked the repository then you need to go the actions tab and enable actions on your repository.
+
 ## Secrets
 
 You need to configure a few secrets in your repository:
