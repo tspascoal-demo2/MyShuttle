@@ -18,14 +18,22 @@ This is a sample application that is not intended to show any programming best p
   - Provisions an isolated ephemeral environment (which is destroyed when the pull request is closed/completed)
   - Runs integrations tests on the provisioned environment using [Playwright](https://playwright.dev/)
   - Tests (both unit and function tests) results are published as PR comments (and PR checks) as well as code coverage reports.
-- [Composite Actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) - Uses composite actions as a way to have a template and to reduce repetitive steps. The composite action, provisions, deploys and runs integration tests. The composite actions are stored in the [actions](actions) folder. The implementation of this action is certainly debeatable since it downloads artifacts, which should be a responsability of the workflow. [Here](https://colinsalmcorner.com/github-composite-actions) is a nice writeup of the pros and cons of using composite actions. 
+- [Composite Actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) - Uses composite actions as a way to have a template and to reduce repetitive steps. The composite action, provisions, deploys and runs integration tests. The composite actions are stored in the [actions](actions) folder. The implementation of this action is certainly debeatable since it downloads artifacts, which should be a responsability of the workflow. [Here](https://colinsalmcorner.com/github-composite-actions) is a nice writeup of the pros and cons of using composite actions.
 - Packages - When a [release](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) is created a maven package is published to [GitHub packages](https://github.com/features/packages)
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 
+Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group).
+
+## Screnshots
+
+CI/CD Workflow
+
 ![CI/CD Workflow](./docs/ci-cd-workflow.png)
 
-It uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group).
+Releases, Packages and environment in repo view
+
+![Releases, Packages and environment](./docs/releases-packages-environment.png)
 
 ## Trying this out
 
