@@ -79,6 +79,8 @@ runs:
 
   ## Integration tests
   - uses: actions/setup-node@v1
+    with:
+      node-version: 14
 
   - name: install playwright
     shell: bash
