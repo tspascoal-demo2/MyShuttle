@@ -82,12 +82,13 @@ runs:
 
   - name: install playwright
     shell: bash
-    run: npx playwright install-deps
+    run: |
+      npx playwright install-deps
   
-  # - name: install playwright dependencies
-  #   shell: bash
-  #   run: npm ci
-  #   working-directory: ${{ env.integration_tests_path}}
+  - name: install playwright dependencies
+    shell: bash
+    run: npm ci
+    working-directory: ${{ env.integration_tests_path}}
 
   - name: run integration tests
     shell: bash
