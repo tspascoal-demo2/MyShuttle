@@ -43,6 +43,8 @@ I have created some [instructions](./docs/configuring.md) if you want to run thi
 
 > Although you can fork the repository, if you want to try the enterprise features I recommend that you do a clone and push to your organization (or the simpler [import](https://docs.github.com/en/github/importing-your-projects-to-github/importing-source-code-to-github/importing-a-repository-with-github-importer)). While you can fork a repository into an organization you can **only** have a fork per target organization, so it is recommended to clone the repository into your organization in order to allow more people on _your_ organization to try it out.
 
+> **NOTE** If you import the repository you will need to change the default branch to `demos/main`. see [Changing the default branch](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-branches-in-your-repository/changing-the-default-branch)
+
 It requires GitHub Enterprise to use [environments](https://docs.github.com/en/actions/deployment/environments) and manual approvals. On a personal repo you won't see environments and approvals but everyhing else works without making changes.
 
 The deletion of the ephemeral environment when the Pull request is closed requires you to create an app (or use a PAT token and changing the [pr-closed](.github/workflows/pr-closed.yml) workflow to use it instead of the app)
