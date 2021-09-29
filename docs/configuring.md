@@ -55,6 +55,14 @@ In the `QA` environment you might want to create two protection rules:
 
 ![environment protection](environment-protection.png)
 
+## Code Scanning
+
+The CICD workflow (job `analyze`) has a few advanced security features that you might want to take advantage of (they are executed by default).
+
+If you are using a public repository, you can skip this section, otherwise you will need to enable `Code Scanning` (see [Managing security and analysis settings for your repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-security-and-analysis-settings-for-your-repository)).
+
+This requires that GitHub Advanced security is licensed at the enterprise (and enabled on the org) level. If you don't have access to GitHub Advanced Security you should delete the `analyze` job from the `cicd` workflow.
+
 ## Challenge
 
 In order to delete the ephemeral environment created when a Pull Request is created, you can't use the built-in [GITHUB_TOKEN](https://docs.github.com/en/actions/security-guides/automatic-token-authentication) to do so you the [pr-closed workflow](../.github/workflows/pr-closed.yml) uses a GitHub Application to get a temporary token with enough permissions to delete the environment.
