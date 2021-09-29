@@ -79,12 +79,14 @@ runs:
 
   ## Integration tests
   - uses: actions/setup-node@v1
-  - uses: microsoft/playwright-github-action@v1
-  
-  - name: install playwright dependencies
-    shell: bash
-    run: npm ci
+  - name: install playwright
+    run: npx playwright install-deps
     working-directory: ${{ env.integration_tests_path}}
+  
+  # - name: install playwright dependencies
+  #   shell: bash
+  #   run: npm ci
+  #   working-directory: ${{ env.integration_tests_path}}
 
   - name: run integration tests
     shell: bash
