@@ -83,7 +83,6 @@ runs:
   - name: install playwright
     shell: bash
     run: npx playwright install-deps
-    working-directory: ${{ env.integration_tests_path}}
   
   # - name: install playwright dependencies
   #   shell: bash
