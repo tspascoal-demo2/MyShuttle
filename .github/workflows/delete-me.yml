@@ -1,0 +1,134 @@
+
+name: TEST CI
+
+on:
+  push:
+    branches: [ demos/main ]
+  pull_request:
+    branches: [ demos/main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'zulu'
+        cache: maven
+    - name: Build with Maven
+      run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
+      
+    - uses: actions/upload-artifact@v2
+      with: 
+        path: |
+          **/target/*.war 
+          *.sql 
+          IaC/**/*.*
+        name: artifacts
+
+  test:
+
+    runs-on: ubuntu-latest
+    name: deploy to test
+    
+    environment: test
+    
+    env:
+      RGNAME: myshuttle-test-${{ github.job }}
+      SITENAME: tspascoal-myshuttle2342${{ github.job }}
+    
+    concurrency: testenvironment
+    
+    # if: github.ref == 'refs/heads/demos/main'    
+    needs: [build]
+
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        path: artifacts
+        name: artifacts
+        
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Create RG
+      uses: Azure/cli@v1.0.0
+      with:
+        inlineScript: az group create --location "west europe" --name ${{ env.RGNAME }}  --tags demo=true
+
+    - name: Provision Infra using ARM Template
+      uses: Azure/arm-deploy@main
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{  fromJSON(secrets.AZURE_CREDENTIALS ).subscriptionId }}
+        resourceGroupName: ${{ env.RGNAME }}
+        template: artifacts/IaC/azuredeploy.json
+        deploymentMode: Incremental
+        parameters: siteName="${{ env.SITENAME }}" administratorLogin="dummy" administratorLoginPassword="dummy" dbServerName="tsp-myshuttle${{ github.job }}"
+        
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.SITENAME }}
+        package: artifacts/target/*.war
+        
+  production:
+
+    runs-on: ubuntu-latest
+    name: deploy to production
+    
+    environment: test
+    
+    env:
+      RGNAME: myshuttle-test-${{ github.job }}
+      SITENAME: tspascoal-myshuttle2342${{ github.job }}
+    
+    concurrency: testenvironment
+    
+    # if: github.ref == 'refs/heads/demos/main'    
+    needs: [build]
+
+    steps:
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v2.0.5
+      with:
+        path: artifacts
+        name: artifacts
+        
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Create RG
+      uses: Azure/cli@v1.0.0
+      with:
+        inlineScript: az group create --location "west europe" --name ${{ env.RGNAME }}  --tags demo=true
+
+    - name: Provision Infra using ARM Template
+      uses: Azure/arm-deploy@main
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{  fromJSON(secrets.AZURE_CREDENTIALS ).subscriptionId }}
+        resourceGroupName: ${{ env.RGNAME }}
+        template: artifacts/IaC/azuredeploy.json
+        deploymentMode: Incremental
+        parameters: siteName="${{ env.SITENAME }}" administratorLogin="dummy" administratorLoginPassword="dummy" dbServerName="tsp-myshuttle${{ github.job }}"
+        
+    - name: Deploy Web App
+      uses: Azure/webapps-deploy@v2
+      with:
+        app-name: ${{ env.SITENAME }}
+        package: artifacts/target/*.war
+        
+        
+      
+        
+
+      
+        
