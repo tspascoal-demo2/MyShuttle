@@ -8,7 +8,9 @@ MyShuttle is a sample Java/JEE application that provides booking system, admin p
 
 > For historical reasons the default branch for the repository is `demos/main`.
 
-This is a sample application that is not intended to show any programming best practices, the intent of this repo is to show some capabilities:
+> This is a sample application that is not intended to show any programming best practices. In fact it uses old dependencies on purpose to show dependabot, there is a branch with a hardcoded PAT to show credential scanning and the workflows have some bad practices on purpose (can you spot them?).
+
+The intent of this repo is to show some capabilities:
 
 - [Environments](https://docs.github.com/en/actions/deployment/environments):
   - [Approvals](https://docs.github.com/en/actions/managing-workflow-runs/reviewing-deployments)
