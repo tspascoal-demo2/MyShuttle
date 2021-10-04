@@ -36,6 +36,7 @@ jobs:
       run: mvn -B verify cobertura:cobertura sonar:sonar --file pom.xml -DskipITs --batch-mode --quiet -Dsonar.projectKey=MyShuttleDemo
       env:
         SONAR_TOKEN : ${{ secrets.SONARCLOUD_TOKEN}}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
