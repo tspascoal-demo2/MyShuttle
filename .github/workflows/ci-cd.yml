@@ -33,9 +33,9 @@ jobs:
         cache: 'maven'
 
     - name: Build with Maven
-      run: mvn -B verify cobertura:cobertura sonar:sonar --file pom.xml -DskipITs --batch-mode --quiet
+      run: mvn -B verify cobertura:cobertura sonar:sonar --file pom.xml -DskipITs --batch-mode --quiet -Dsonar.projectKey=MyShuttleDemo
       env:
-        _JAVA_OPTIONS: "-Dsonar.login=${{ secrets.SONARCLOUD_TOKEN}}"
+        SONAR_TOKEN : ${{ secrets.SONARCLOUD_TOKEN}}
 
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1

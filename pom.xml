@@ -149,7 +149,8 @@
   </distributionManagement>
   <properties>
     <sonar.organization>tiago-pascoal60111</sonar.organization>
-    <sonar.projectKey>stale-repos</sonar.projectKey>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.organization>tiago-pascoal60111</sonar.organization>
     <sonar.sources>src</sonar.sources>
     <sonar.exclusions>src/test</sonar.exclusions>
 <!-- 
