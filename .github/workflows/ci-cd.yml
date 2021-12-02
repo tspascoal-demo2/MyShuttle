@@ -185,10 +185,9 @@ jobs:
           output: 'trivy-results.sarif'
 #          severity: 'CRITICAL,HIGH'
 
-
-      - name: actions/upload-artifact@v1
-        with:trivy-results.sarif
-          path: 
+      - uses: actions/upload-artifact@v1
+        with:
+          path: 'trivy-results.sarif'
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v1
