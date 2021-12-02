@@ -130,8 +130,9 @@ jobs:
       actions: read
       contents: read
       security-events: write
-      
-    if: github.actor != 'dependabot[bot]'
+ 
+    if: false
+#    if: github.actor != 'dependabot[bot]'
 
     steps:
     - name: Checkout repository
