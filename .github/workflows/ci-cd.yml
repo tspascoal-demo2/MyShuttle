@@ -131,8 +131,7 @@ jobs:
       contents: read
       security-events: write
  
-    if: false
-#    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]'
 
     steps:
     - name: Checkout repository
@@ -183,10 +182,7 @@ jobs:
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
-#          severity: 'CRITICAL,HIGH'
-
-      - name: Fix Result Paths
-        run: jq ".runs[].results[].locations[].physicalLocation.artifactLocation.uri = \"./\"" trivy-results.sarif > trivy-results-fixed.sarif
+          severity: 'CRITICAL,HIGH'
 
       - uses: actions/upload-artifact@v1
         with:
