@@ -174,12 +174,12 @@ jobs:
 
       - name: Build an image from Dockerfile
         run: |
-          docker build -t myshuttle:${{ github.sha }} . -f src/Dockerfile
+          docker build -t ghcr.io/myshuttle:${{ github.sha }} . -f src/Dockerfile
 
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'myshuttle:${{ github.sha }}'
+          image-ref: 'ghcr.io/myshuttle:${{ github.sha }}'
           format: 'template'
           template: '@/contrib/sarif.tpl'
           output: 'trivy-results.sarif'
