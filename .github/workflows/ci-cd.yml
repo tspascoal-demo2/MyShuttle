@@ -186,13 +186,13 @@ jobs:
 
       - uses: actions/upload-artifact@v1
         with:
-          path: 'trivy-results-fixed.sarif'
+          path: 'trivy-results.sarif'
           name: trivy
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: 'trivy-results-fixed.sarif'
+          sarif_file: 'trivy-results.sarif'
 
 
   dev:
