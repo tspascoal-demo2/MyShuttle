@@ -66,4 +66,11 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          path: ' ${{ steps.anchore-scan.outputs.sarif }}'
+          name: anchore
+
+
 
