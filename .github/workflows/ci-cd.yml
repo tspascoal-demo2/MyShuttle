@@ -34,7 +34,7 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
-co
+
     - name: Publish Unit Test Results
       uses: EnricoMi/publish-unit-test-result-action@v1
       if: always() && github.actor != 'dependabot[bot]'
