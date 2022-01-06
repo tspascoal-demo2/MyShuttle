@@ -226,6 +226,7 @@ jobs:
           image: "ghcr.io/myshuttle:${{ github.sha }}"
           acs-report-enable: true
           fail-build: false
+          severity-cutoff: low
 
       - name: Upload Anchore Scan Report
         uses: github/codeql-action/upload-sarif@v1
