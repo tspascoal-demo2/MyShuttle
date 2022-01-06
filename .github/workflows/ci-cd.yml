@@ -64,7 +64,7 @@ jobs:
           
       - uses: actions/upload-artifact@v1
         with:
-          path: ' ${{ steps.anchore-scan.outputs.sarif }}'
+          path: '${{ steps.anchore-scan.outputs.sarif }}'
           name: anchore
 
       - name: Upload Anchore Scan Report
