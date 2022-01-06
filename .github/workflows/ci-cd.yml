@@ -52,6 +52,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: 'trivy-results.sarif'
+          category: trivy
           
       - name: Run the Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
         id: anchore-scan
@@ -71,6 +72,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
+          category: anchore
           
 
 
