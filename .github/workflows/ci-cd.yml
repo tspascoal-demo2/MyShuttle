@@ -150,8 +150,8 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
       
-  containerscantrivy:
-    name: container scanning - Trivy
+  containerscan:
+    name: container scanning
     
     runs-on: ubuntu-latest
 
@@ -189,37 +189,14 @@ jobs:
           path: 'trivy-results.sarif'
           name: trivy
 
+      # Use a category so we can upload more than one file per job
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: 'trivy-results.sarif'
+          category: trivy
 
-  containerscananchore:
-    name: container scanning - Anchore
-    
-    runs-on: ubuntu-latest
-
-    if: github.actor != 'dependabot[bot]'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '8'
-          cache: 'maven'
-
-      - name: Build with Maven
-        run: mvn -B package cobertura:cobertura --file pom.xml -DskipITs --batch-mode --quiet
-
-      - name: Build an image from Dockerfile
-        run: |
-          docker build -t ghcr.io/myshuttle:${{ github.sha }} . -f src/Dockerfile
-          
-      - name: Run the Anchore scan action itself with GitHub Advanced Security code scanning integration enabled
+      - name: Anchore scan
         id: anchore-scan
         uses: anchore/scan-action@v3
         with:
@@ -227,11 +204,18 @@ jobs:
           acs-report-enable: true
           fail-build: false
           severity-cutoff: low
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          path: '${{ steps.anchore-scan.outputs.sarif }}'
+          name: anchore
 
+      # Use a category so we can upload more than one file per job
       - name: Upload Anchore Scan Report
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
+          category: anchore
 
   dev:
     if: github.ref == 'refs/heads/demos/main' 
