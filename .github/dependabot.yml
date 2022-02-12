@@ -5,7 +5,14 @@
 
 version: 2
 updates:
-  - package-ecosystem: "maven" # See documentation for possible values
+  - package-ecosystem: "maven"
     directory: "/" # Location of package manifests
+    schedule:
+      interval: "monthly"
+
+  # Enable version updates for Docker
+  - package-ecosystem: "docker"
+    directory: "/src"
+    # Check for updates once a week
     schedule:
       interval: "monthly"
