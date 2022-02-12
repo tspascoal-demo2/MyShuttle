@@ -2,7 +2,7 @@ name: Maven Package
 
 on:
   release:
-    types: [created]
+    types: [published]
     
 env:
   version: ${{ github.event.release.tag_name }}
@@ -23,6 +23,6 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
     - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -DskipTests=true --batch-mode --no-transfer-progress
+      run: mvn deploy -DskipTests=true -DmyShuttleVersion=${{github.event.release.tag_name}} --batch-mode --no-transfer-progress
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
