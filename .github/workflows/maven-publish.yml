@@ -22,7 +22,10 @@ jobs:
         distribution:  'adopt'
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -DskipTests=true -DmyShuttleVersion=${{github.event.release.tag_name}} --batch-mode --no-transfer-progress
+    - name: Set Version on pom.xml
+      run: mvn versions:set -DnewVersion=${{github.event.release.tag_name}} -Dincludes=org.codehaus.plexus:plexus-utils
+
+    - name: Publish to GitHub Packages
+      run: mvn deploy -DskipTests=true --batch-mode --no-transfer-progress
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
