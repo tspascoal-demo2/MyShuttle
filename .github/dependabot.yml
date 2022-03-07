@@ -9,6 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "monthly"
+    labels:
+      - "maven"
+      - "dependencies"
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
@@ -16,3 +19,6 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "monthly"
+    labels:
+      - "docker"
+      - "dependencies"
