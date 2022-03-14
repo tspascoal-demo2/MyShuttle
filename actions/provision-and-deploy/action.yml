@@ -118,6 +118,19 @@ runs:
       path: ${{ env.integration_tests_path}}/screenshots/**
       name: screenshots-${{ github.job }}
 
+  - name: ZAP Scan
+    uses: zaproxy/action-baseline@v0.6.1
+    with:
+      target: '${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev'
+
+  - name: Create sarif file from zaproxy results
+    uses: SvanBoxel/zaproxy-to-ghas@main
+
+  - name: Upload zap scan results
+    uses: github/codeql-action/upload-sarif@v1
+    with:
+      sarif_file: results.sarif
+
   # Fail workflow if tests have failed
   - name: fail workflow if tests failed
     shell: bash
