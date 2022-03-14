@@ -49,7 +49,7 @@ runs:
       inlineScript: |
           if [ "$(az group exists --name ${{ inputs.ResourceGroupName }})" = "false" ]; then
             echo creating ${{ inputs.ResourceGroupName }} resource group
-            az group create --location "Sweden Central" --name ${{ inputs.ResourceGroupName }} --tags demo=true
+            az group create --location "eastus2" --name ${{ inputs.ResourceGroupName }} --tags demo=true
           fi
   - name: Provision Infra using ARM Template
     uses: Azure/arm-deploy@main
