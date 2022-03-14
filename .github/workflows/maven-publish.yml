@@ -28,4 +28,4 @@ jobs:
     - name: Publish to GitHub Packages
       run: mvn deploy -DskipTests=true --batch-mode --no-transfer-progress
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ GITHUB.TOKEN }}
