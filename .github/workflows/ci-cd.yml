@@ -46,7 +46,7 @@ jobs:
         deduplicate_classes_by_file_name: false
 
     - name: cobertura-report
-      uses: tspascoal/cobertura-action@master
+      uses: 5monkeys/cobertura-action@v12
       if: always() && github.actor != 'dependabot[bot]'
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
