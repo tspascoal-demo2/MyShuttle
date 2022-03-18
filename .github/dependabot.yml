@@ -16,7 +16,7 @@ updates:
   # Enable version updates for Docker
   - package-ecosystem: "docker"
     directory: "/src"
-    # Check for updates once a week
+    # Check for updates once a month
     schedule:
       interval: "monthly"
     labels:
