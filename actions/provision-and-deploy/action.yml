@@ -122,6 +122,7 @@ runs:
     uses: zaproxy/action-baseline@v0.6.1
     with:
       target: '${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev'
+      allow_issue_writing: false
 
   - name: Create sarif file from zaproxy results
     uses: SvanBoxel/zaproxy-to-ghas@main
