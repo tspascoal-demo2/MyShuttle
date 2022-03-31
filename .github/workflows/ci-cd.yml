@@ -166,11 +166,17 @@ jobs:
         with:
           path: ./IaC
 
-      - name: Test result - path
+      - name: Test result
         shell: bash
-        continue-on-error: true
         run: |
-          echo '${{ steps.pathtest.outputs.results }}' | jq
+          echo '${{ steps.pathtest.outputs.results }}' > arm-ttk.json
+          jq arm-ttk.json
+
+      - name: Upload Scan Result
+        uses: actions/upload-artifact@v2
+        with:
+          path: arm-ttk.json
+          name: arm-scan
 
   containerscan:
     name: container scanning
