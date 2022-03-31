@@ -169,8 +169,8 @@ jobs:
       - name: Test result
         shell: bash
         run: |
+          echo '${{ toJSON(fromJSON(steps.pathtest.outputs.results)) }}' 
           echo '${{ steps.pathtest.outputs.results }}' > arm-ttk.json
-          jq arm-ttk.json
 
       - name: Upload Scan Result
         uses: actions/upload-artifact@v2
