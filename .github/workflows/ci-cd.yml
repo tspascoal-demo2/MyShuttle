@@ -170,7 +170,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          echo '${{ steps.pathtest.outputs.results }}'
+          echo '${{ steps.pathtest.outputs.results }}' | jq
 
   containerscan:
     name: container scanning
