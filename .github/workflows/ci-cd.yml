@@ -158,6 +158,8 @@ jobs:
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
     steps:
+      - uses: actions/checkout@v2
+
       - name: Test ARM Templates - path
         id: pathtest
         uses: aliencube/arm-ttk-actions@v0.3
