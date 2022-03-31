@@ -149,7 +149,27 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-      
+
+  armscan:
+    name: ARM template scanning
+    
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+
+    steps:
+      - name: Test ARM Templates - path
+        id: pathtest
+        uses: aliencube/arm-ttk-actions@v0.3
+        with:
+          path: ./IaC
+
+      - name: Test result - path
+        shell: bash
+        continue-on-error: true
+        run: |
+          echo "${{ toJSON(fromJSON(steps.pathtest.outputs.results)) }}"
+
   containerscan:
     name: container scanning
     
