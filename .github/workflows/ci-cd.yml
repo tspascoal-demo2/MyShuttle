@@ -149,7 +149,37 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
-      
+
+  armscan:
+    name: ARM template scanning
+    
+    runs-on: ubuntu-latest
+
+    if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Test ARM Templates
+        id: pathtest
+        uses: aliencube/arm-ttk-actions@v0.3
+        with:
+          path: ./IaC
+
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.1347.0
+        with:
+          directory: IaC/
+          output_format: sarif
+          soft_fail: true
+          container_user: 1000 
+
+      - name: Upload checkov results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'results.sarif'
+
   containerscan:
     name: container scanning
     
