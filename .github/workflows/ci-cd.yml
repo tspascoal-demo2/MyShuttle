@@ -168,7 +168,7 @@ jobs:
         shell: bash
         continue-on-error: true
         run: |
-          echo "${{ toJSON(fromJSON(steps.pathtest.outputs.results)) }}"
+          echo '${{ toJSON(fromJSON(steps.pathtest.outputs.results)) }}'
 
   containerscan:
     name: container scanning
