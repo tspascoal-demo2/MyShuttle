@@ -160,16 +160,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Test ARM Templates - path
+      - name: Test ARM Templates
         id: pathtest
         uses: aliencube/arm-ttk-actions@v0.3
         with:
           path: ./IaC
 
-      - name: Test result
+      - name: Write results to file
         shell: bash
         run: |
-          echo '${{ toJSON(fromJSON(steps.pathtest.outputs.results)) }}' 
           echo '${{ steps.pathtest.outputs.results }}' > arm-ttk.json
 
       - name: Upload Scan Result
