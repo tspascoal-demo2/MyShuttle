@@ -171,11 +171,13 @@ jobs:
         uses: bridgecrewio/checkov-action@v12.1347.0
         with:
           directory: IaC/
-          soft_fail: true 
-          output_format: sarif 
+          output_format: sarif
+          container_user: 1000 
 
-      - run: ls -al
-
+      - name: Upload checkov results
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: 'results.sarif'
 
   containerscan:
     name: container scanning
