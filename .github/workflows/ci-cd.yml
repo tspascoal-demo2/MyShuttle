@@ -166,6 +166,20 @@ jobs:
         with:
           path: ./IaC
 
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@v12.1347.0
+        with:
+          directory: IaC/
+          check: CKV_AWS_1 # optional: run only a specific check_id. can be comma separated list
+          skip_check: CKV_AWS_2 # optional: skip a specific check_id. can be comma separated list
+          soft_fail: true 
+          output_format: sarif 
+          config_file: path/this_file
+
+      - run: ls -al
+
+
   containerscan:
     name: container scanning
     
