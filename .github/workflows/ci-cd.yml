@@ -172,6 +172,7 @@ jobs:
         with:
           directory: IaC/
           output_format: sarif
+          soft_fail: true
           container_user: 1000 
 
       - name: Upload checkov results
