@@ -123,6 +123,19 @@ jobs:
 
             Don't worry we will delete it once this Pull request is closed. :fire:
 
+      - name: add comment to PR with environment info to summary
+        if: always()
+        shell: bash
+        run: |
+            cat << EOF > $GITHUB_STEP_SUMMARY
+            :loudspeaker: We created an ephemeral environment (webapp+db) so you can test the deploy for [my shuttle pr ${{env.prNumber}}](${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev)
+
+            You can also track the deployments for this environment in [Pull request ${{ github.event.pull_request.number }} environment](/${{github.repository}}/deployments/activity_log?environment=pull-request-${{ github.event.pull_request.number }})
+
+            Don't worry we will delete it once this Pull request is closed. :fire:
+
+            EOF
+
   analyze:
     name: Security Scanning
     runs-on: ubuntu-latest
