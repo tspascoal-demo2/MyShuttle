@@ -1,4 +1,4 @@
-# Introduction
+# Introduction DO NOT MERGE
 
 ![CICD](https://github.com/tspascoal-demo2/MyShuttle/workflows/CICD/badge.svg)
 
@@ -8,7 +8,7 @@ MyShuttle is a sample Java/JEE application that provides booking system, admin p
 
 > For historical reasons the default branch for the repository is `demos/main`.
 
-> This is a sample application that is not intended to show any programming best practices. In fact it uses old dependencies on purpose to show dependabot, there is a branch with a hardcoded PAT to show credential scanning and the workflows have some bad practices on purpose (can you spot them?).
+> This is a sample application that is not intended to show any programming best practices. In fact it uses old dependencies on purpose to show dependabot (like log4j), there is a branch with a hardcoded PAT to show credential scanning and the workflows have some bad practices on purpose (can you spot them?).
 
 The intent of this repo is to show some capabilities:
 
@@ -29,6 +29,7 @@ The intent of this repo is to show some capabilities:
 - Dependabot - To ensure supply chain security 
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 - [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
+- [Job Summaries](https://github.blog/changelog/2022-05-09-github-actions-enhance-your-actions-with-job-summaries/)
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group). ARM templates are checked with both [Azure Resource Manager Toolkit](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/test-toolkit) and [checkov](https://github.com/bridgecrewio/checkov). (can you spot the issues being flagged?)
 
