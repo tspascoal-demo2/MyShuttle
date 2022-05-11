@@ -139,6 +139,9 @@ jobs:
   analyze:
     name: Security Scanning
     runs-on: ubuntu-latest
+
+    # Good practice..... Only requires the permissions that are actually needed
+    # see https://github.blog/changelog/2021-04-20-github-actions-control-permissions-for-github_token
     permissions:
       actions: read
       contents: read
@@ -170,6 +173,10 @@ jobs:
 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
+    # Bad practice. Not setting the required permissions. 
+    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
+    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
+
     steps:
       - uses: actions/checkout@v2
 
@@ -199,6 +206,10 @@ jobs:
     runs-on: ubuntu-latest
 
     if: github.actor != 'dependabot[bot]'
+
+    # Bad practice. Not setting the required permissions. 
+    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
+    # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
       - name: Checkout code
@@ -270,6 +281,10 @@ jobs:
     environment:
       name: DEV
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
+
+    # Bad practice. Not setting the required permissions. 
+    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
+    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     needs: [build]
 
