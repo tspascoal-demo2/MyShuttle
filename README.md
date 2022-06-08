@@ -33,6 +33,8 @@ The intent of this repo is to show some capabilities:
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group). ARM templates are checked with both [Azure Resource Manager Toolkit](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/test-toolkit) and [checkov](https://github.com/bridgecrewio/checkov). (can you spot the issues being flagged?)
 
+This uses a secure connection to mysql
+
 ## Screnshots
 
 CI/CD Workflow
