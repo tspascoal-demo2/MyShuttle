@@ -25,6 +25,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: 'Check new/updated dependencies for potential vulnerabilities or unwanted licenses'
+      uses: actions/dependency-review-action@v2
+      with:
+        # Use critical on purpose for demo purposes :)
+        fail-on-severity: critical
+        deny-licenses: 'GPL 3.0'
+
     - name: Set up JDK 8
       uses: actions/setup-java@v2
       with:

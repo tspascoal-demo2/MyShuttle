@@ -26,6 +26,9 @@ The intent of this repo is to show some capabilities:
   - Code is scanned with [CodeQL](https://codeql.github.com/docs/)
   - Container image are scanned with both [trivy](https://www.aquasec.com/products/trivy/) and [Anchore](https://anchore.com/)
   - We perform a DAST analysis on deployed code using [OWASP Zap](https://www.zaproxy.org/docs/docker/baseline-scan/)
+  - Newly added or updated dependencies are checked with [Dependency Review Action](https://github.com/actions/dependency-review-action) for:
+    - Potential vulnerabilities
+    - Unwanted licenses
 - Dependabot - To ensure supply chain security 
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 - [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
