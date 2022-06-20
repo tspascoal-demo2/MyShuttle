@@ -20,7 +20,6 @@ jobs:
 
       - name: delete PR environments
         run:
-            chmod 755 .github/scripts/del-environments.sh
-            .github/scripts/del-environments.sh "${{ github.repository}}"
+            ${{ github.workspace}}/.github/scripts/del-environments.sh "${{ github.repository}}"
         env:
           GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
