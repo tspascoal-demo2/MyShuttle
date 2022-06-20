@@ -1,0 +1,26 @@
+name: Delete PR environments
+
+permissions:
+  actions: write
+  
+on:
+  workflow_dispatch:       
+
+jobs:
+  del_pr_envs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get Token To delete environment
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@v1
+        with:
+          application_id: ${{ secrets.PERMISSIONS_APP_ID }}
+          application_private_key: ${{ secrets.PERMISSIONS_APP_PRIVATE_KEY }}    
+
+      - name: delete PR environments
+        run:
+            chmod 755 .github/scripts/del-environments.sh
+            .github/scripts/del-environments.sh "${{ github.repository}}"
+        env:
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
