@@ -28,6 +28,7 @@ jobs:
 
     - name: 'Check new/updated dependencies for potential vulnerabilities or unwanted licenses'
       uses: actions/dependency-review-action@v2
+      if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
       with:
         # Use critical on purpose for demo purposes :)
         fail-on-severity: critical
