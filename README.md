@@ -33,6 +33,7 @@ The intent of this repo is to show some capabilities:
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 - [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 - [Job Summaries](https://github.blog/changelog/2022-05-09-github-actions-enhance-your-actions-with-job-summaries/)
+- Generates an SBOM with (Anchore sbom action)[hhtps://github.com/anchore/sbom-action] mostly to show (runtime found dependencies)[https://github.blog/changelog/2022-06-17-dependency-graph-has-a-rest-api-for-submitting-dependencies-detected-at-build-time/]
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group). ARM templates are checked with both [Azure Resource Manager Toolkit](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/test-toolkit) and [checkov](https://github.com/bridgecrewio/checkov). (can you spot the issues being flagged?)
 
