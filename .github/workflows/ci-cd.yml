@@ -237,6 +237,13 @@ jobs:
         run: |
           docker build -t ghcr.io/myshuttle:${{ github.sha }} . -f src/Dockerfile
 
+      - name: Generate SBOM (and upload to dependencies)
+        uses: anchore/sbom-action@v0
+        with:
+          image: ghcr.io/myshuttle:${{ github.sha }}
+          artifact-name: sbom.spdx
+          dependency-snapshot: true
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
