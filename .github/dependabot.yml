@@ -24,6 +24,7 @@ updates:
       - "dependencies"
 
   - package-ecosystem: "github-actions"
+    directory: "/"
     # Check for updates once a month
     schedule:
       interval: "monthly"
