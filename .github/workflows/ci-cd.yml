@@ -63,7 +63,7 @@ jobs:
         minimum_coverage: 5
 
     - name: Upload Build Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         path: |
             **/target/*.war 
@@ -254,7 +254,7 @@ jobs:
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
 
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           path: 'trivy-results.sarif'
           name: trivy
@@ -275,7 +275,7 @@ jobs:
           fail-build: false
           severity-cutoff: low
           
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           path: '${{ steps.anchore-scan.outputs.sarif }}'
           name: anchore
