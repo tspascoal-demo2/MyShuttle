@@ -29,7 +29,7 @@ The intent of this repo is to show some capabilities:
   - Newly added or updated dependencies are checked with [Dependency Review Action](https://github.com/actions/dependency-review-action) for:
     - Potential vulnerabilities
     - Unwanted licenses
-- Dependabot - To ensure supply chain security 
+- Dependabot - To ensure supply chain security with [dependabot security updates](https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/about-dependabot-security-updates) and [dependabot version updates](https://github.blog/2020-06-01-keep-all-your-packages-up-to-date-with-dependabot/)
 - [code owners](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) - Automatically assign pull request code reviewers  based on the file path(s) of the proposed changes.
 - [Issue templates](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-templates-for-your-repository)
 - [Job Summaries](https://github.blog/changelog/2022-05-09-github-actions-enhance-your-actions-with-job-summaries/)
