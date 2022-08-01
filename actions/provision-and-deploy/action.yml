@@ -107,7 +107,7 @@ runs:
       BASE_URL: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
   - name: Publish Integration Test Results
-    uses: EnricoMi/publish-unit-test-result-action@v1
+    uses: EnricoMi/publish-unit-test-result-action@v2
     with:
       files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
       check_name: Integration Tests ${{ github.job }} 
