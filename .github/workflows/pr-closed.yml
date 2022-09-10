@@ -19,15 +19,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
-        uses: Azure/cli@v1
-        with:
-          inlineScript: |
-             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "true" ]; then
-                echo 'deleting ${{ env.ResourceGroupName }} resource group (non blocking)'
-                az group delete --name "${{ env.ResourceGroupName }}" --yes --no-wait
-             fi
-
       - name: Get Token To delete environment
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v1
@@ -37,10 +28,21 @@ jobs:
 
       - name: delete environment
         run:
-          gh api --method DELETE /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
+          if gh api /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
+            gh api --method DELETE /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
+          fi
         env:
           GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
+
+      - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
+        uses: Azure/cli@v1
+        with:
+          inlineScript: |
+             if [ "$(az group exists --name ${{ env.ResourceGroupName }})" = "true" ]; then
+                echo 'deleting ${{ env.ResourceGroupName }} resource group (non blocking)'
+                az group delete --name "${{ env.ResourceGroupName }}" --yes --no-wait
+             fi
 
       - uses: marocchino/sticky-pull-request-comment@v2
         if: always()
