@@ -233,7 +233,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v1.2
+        uses: checkmarx/kics-github-action@v1.6
         with:
           path: 'IaC,src'
           config_path: ./kics.config
