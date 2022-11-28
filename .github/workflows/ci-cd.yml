@@ -176,7 +176,7 @@ jobs:
       uses: github/codeql-action/analyze@v2
 
   armscan:
-    name: ARM templates and docker scanning
+    name: ARM templates and docker file scanning
     
     runs-on: ubuntu-latest
 
@@ -233,7 +233,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v1.2
+        uses: checkmarx/kics-github-action@v1
         with:
           path: 'IaC,src'
           config_path: ./kics.config
