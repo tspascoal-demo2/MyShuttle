@@ -210,40 +210,24 @@ jobs:
           sarif_file: 'results.sarif'
 
       ##################### Scan ARM and dockerfile with KICS
-      - name: Mkdir results-dir
+      - name: Mkdir kics-output
         # make sure results dir is created
-        run: mkdir -p results-dir
-      - name: Create config file
-        # creating a heredoc config file
-        run: |
-          cat <<EOF >>kics.config
-          {
-            "exclude-categories": "Encryption",
-            "exclude-paths": "terraform/gcp/big_data.tf,terraform/gcp/gcs.tf",
-            "log-file": true,
-            "minimal-ui": false,
-            "no-color": false,
-            "no-progress": true,
-            "output-path": "./results-dir",
-            "payload-path": "${{ github.workspace}}",
-            "preview-lines": 5,
-            "report-formats": "json,sarif",
-            "type": "AzureResourceManager,Dockerfile",
-            "verbose": true
-          }
-          EOF
-      - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v1
+        run: mkdir -p kics-output
+      - name: run kics Scan
+        uses: checkmarx/kics-github-action@v1.6
         with:
-          path: 'IaC,src'
-          config_path: ./kics.config
+          path: 'IaC'
+          output_path: kics-output/
+          output_formats: 'json,sarif'
+          type: AzureResourceManager
+          cloud_provider: azure
           ignore_on_exit: results
-          
+
       - name: Upload KICS SARIF file
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: results-dir/results.sarif          
+          sarif_file: kics-output/results.sarif          
 
   containerscan:
     name: container scanning
