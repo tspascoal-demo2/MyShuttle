@@ -24,6 +24,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      with:
+        egress-policy: audit  
+        
     - uses: actions/checkout@v3
 
     - name: 'Check new/updated dependencies for potential vulnerabilities or unwanted licenses'
@@ -89,6 +93,10 @@ jobs:
     needs: [build]
     
     steps:
+      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+        with:
+          egress-policy: audit  
+    
       - run: |
           dbPassword=$(</dev/urandom tr -dc '1234567890!*%@#$%abcdefghijklmnopqrstuvxzABCDEFGHIJKLMNOPQRSTUVXZ' | head -c20)
           dbPassword=$dbPassword$(</dev/urandom tr -dc '!*%@#$%' | head -c4)
@@ -159,6 +167,10 @@ jobs:
     if: github.actor != 'dependabot[bot]'
 
     steps:
+    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      with:
+        egress-policy: audit  
+    
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -187,6 +199,10 @@ jobs:
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
+      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+        with:
+          egress-policy: audit  
+    
       - uses: actions/checkout@v3
 
       - name: Test ARM Templates
@@ -241,6 +257,10 @@ jobs:
     # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
+      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+        with:
+          egress-policy: audit  
+    
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -325,6 +345,10 @@ jobs:
     needs: [build]
 
     steps:
+    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      with:
+        egress-policy: audit  
+
     # we need the local actions and integration tests
     - uses: actions/checkout@v3
 
@@ -353,6 +377,10 @@ jobs:
     needs: [dev]
 
     steps:
+    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      with:
+        egress-policy: audit  
+    
     # we need the local actions and integration tests
     - uses: actions/checkout@v3
 
