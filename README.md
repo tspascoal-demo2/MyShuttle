@@ -59,3 +59,5 @@ I have created some [instructions](./docs/configuring.md) if you want to run thi
 It requires GitHub Enterprise to use [environments](https://docs.github.com/en/actions/deployment/environments) and manual approvals. On a personal repo you won't see environments and approvals but everyhing else works without making changes.
 
 The deletion of the ephemeral environment when the Pull request is closed requires you to create an app (or use a PAT token and changing the [pr-closed](.github/workflows/pr-closed.yml) workflow to use it instead of the app)
+
+
