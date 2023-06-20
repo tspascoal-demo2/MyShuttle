@@ -34,7 +34,7 @@ runs:
   using: "composite"
   steps:
   - name: Download Build Artifact
-    uses: actions/download-artifact@v2.0.5
+    uses: actions/download-artifact@v3.0.2
     with:
       path: artifacts
       name: ${{ inputs.artifactsName }}
