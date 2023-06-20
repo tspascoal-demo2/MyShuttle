@@ -78,7 +78,7 @@ runs:
       package: ${{ inputs.artifactsName }}/target/*.war
 
   ## Integration tests
-  - uses: actions/setup-node@v1
+  - uses: actions/setup-node@v3
     with:
       node-version: 14
 
