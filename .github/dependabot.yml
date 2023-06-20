@@ -29,5 +29,14 @@ updates:
     schedule:
       interval: "monthly"
     labels:
+      - "workflows"
+      - "dependencies"
+
+  - package-ecosystem: github-actions
+    directory: "/actions" # All subdirectories outside of "/.github/workflows" must be explicitly included.
+    schedule:
+      interval: monthly
+    labels:
       - "actions"
       - "dependencies"
+      
