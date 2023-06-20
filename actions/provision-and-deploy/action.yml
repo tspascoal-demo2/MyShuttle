@@ -113,7 +113,7 @@ runs:
       check_name: Integration Tests ${{ github.job }} 
 
   - name: Upload Build Artifact
-    uses: actions/upload-artifact@v2
+    uses: actions/upload-artifact@v3
     with:
       path: ${{ env.integration_tests_path}}/screenshots/**
       name: screenshots-${{ github.job }}
