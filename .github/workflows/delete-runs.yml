@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       days:
-        description: 'Number of days.'p
+        description: 'Number of days.'
         required: true
         default: '90'
       mininum_runs:
@@ -15,14 +15,6 @@ on:
         required: true
         default: '6'
 
-<<<<<<< HEAD
-=======
-        
-    - uses: GitHubSecurityLab/actions-permissions/monitor@v1
-      with:
-        config: ${{ vars.PERMISSIONS_CONFIG }}
-
->>>>>>> 2d3843f07a92d21ac6dd655875163ee91f2c8e29
 jobs:
   del_runs:
     runs-on: ubuntu-latest
