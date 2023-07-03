@@ -25,6 +25,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+      with:
+        config: ${{ vars.PERMISSIONS_CONFIG }}
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
         egress-policy: audit  
@@ -94,6 +97,10 @@ jobs:
     needs: [build]
     
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+        with:
+          config: ${{ vars.PERMISSIONS_CONFIG }}
+
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
           egress-policy: audit  
@@ -168,6 +175,10 @@ jobs:
     if: github.actor != 'dependabot[bot]'
 
     steps:
+    - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+      with:
+        config: ${{ vars.PERMISSIONS_CONFIG }}
+
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
         egress-policy: audit  
@@ -200,6 +211,9 @@ jobs:
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+        with:
+          config: ${{ vars.PERMISSIONS_CONFIG }}
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
           egress-policy: audit  
@@ -258,6 +272,10 @@ jobs:
     # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+        with:
+          config: ${{ vars.PERMISSIONS_CONFIG }}
+
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
           egress-policy: audit  
@@ -346,6 +364,10 @@ jobs:
     needs: [build]
 
     steps:
+    - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+      with:
+        config: ${{ vars.PERMISSIONS_CONFIG }}
+
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
         egress-policy: audit  
@@ -378,6 +400,10 @@ jobs:
     needs: [dev]
 
     steps:
+    - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+      with:
+        config: ${{ vars.PERMISSIONS_CONFIG }}
+
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
         egress-policy: audit  
