@@ -73,26 +73,21 @@ public class DataAccess
 	 * Retrieve an employee by username/email and password
 	 */
 	public static Employee login(String employeeEmail, String employeePassword) {
+		String query = "SELECT * FROM users WHERE username = '" + employeeEmail + "' AND password = '" + employeePassword + "'";
 		try {
-			LOGIN.clearParameters();
-
-			LOGIN.setString(1, employeeEmail);
-			LOGIN.setString(2, employeePassword);
-			
-			try (ResultSet rs = LOGIN.executeQuery()) {
-				if (rs.next()) {
-					Employee emp = new Employee(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
-					return emp;
-				}
-				else
-					return null;
-			}
-		}
-		catch (SQLException sqlEx) {
-			sqlEx.printStackTrace();
+			Statement stmt = theConnection.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			if (rs.next()) {
+				Employee emp = new Employee(rs.getInt("id"), rs.getString("username"), rs.getString("password"));
+				return emp;
+			} else
+				return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
+
 
 	/**
 	 * Return all the fares for a given Employee's ID #
