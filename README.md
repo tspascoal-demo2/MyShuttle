@@ -35,6 +35,7 @@ The intent of this repo is to show some capabilities:
 - [Job Summaries](https://github.blog/changelog/2022-05-09-github-actions-enhance-your-actions-with-job-summaries/)
 - Generates an SBOM with [Anchore sbom action](htps://github.com/anchore/sbom-action) mostly to show [runtime found dependencies](https://github.blog/changelog/2022-06-17-dependency-graph-has-a-rest-api-for-submitting-dependencies-detected-at-build-time/)
 - Runs [OSSF scorecard](https://github.com/ossf/scorecard#what-is-scorecards) [action](https://github.com/ossf/scorecard-action) to ensure (this repo intentionally does a bad job at it) it follows best practices (has code scanning,tests,workflows use minimum permissions,etc). You can check the results in code scanning results
+- Gets the list of the actions permissions we should be using the https://github.com/GitHubSecurityLab/actions-permissions/tree/main/monitor. For more info [see](https://github.blog/2023-06-26-new-tool-to-secure-your-github-actions/)
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group). ARM templates are checked with both [Azure Resource Manager Toolkit](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/test-toolkit), [checkov](https://github.com/bridgecrewio/checkov). (can you spot the issues being flagged?) and [KICS](https://github.com/marketplace/actions/kics-github-action).
 
