@@ -36,7 +36,6 @@ jobs:
       if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
       with:
         # Use critical on purpose for demo purposes :)
-        fail-on-severity: critical
         deny-licenses: 'GPL 3.0'
 
     - name: Set up JDK 8
