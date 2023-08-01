@@ -214,7 +214,7 @@ jobs:
 
       - name: Run Checkov action
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.2395.0
+        uses: bridgecrewio/checkov-action@v12.2446.0
         with:
           directory: IaC/
           output_format: sarif
