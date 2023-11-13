@@ -73,7 +73,7 @@ public class DataAccess
 	 * Retrieve an employee by username/email and password
 	 */
 	public static Employee login(String employeeEmail, String employeePassword) {
-		String query = "SELECT * FROM users WHERE username = '" + employeeEmail + "' AND password = '" + employeePassword + "'";
+		String query = "SELECT * FROM employees WHERE username = '" + employeeEmail + "' AND password = '" + employeePassword + "'";
 		try {
 			Statement stmt = theConnection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
