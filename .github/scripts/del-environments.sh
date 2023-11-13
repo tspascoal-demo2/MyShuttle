@@ -13,3 +13,9 @@ do
     gh api --method DELETE "/repos/$repository/environments/$envname"
 done
 
+gh api --paginate "/repos/$repository/deployments" | --jq '.[] | select(.environment | startswith("pull-request-")) | .id' | while read -r deploymentid ;
+do
+    echo "Deleting deployment $deploymentid"
+    gh api --method DELETE "/repos/$repository/deployments/$deploymentid"
+done
+

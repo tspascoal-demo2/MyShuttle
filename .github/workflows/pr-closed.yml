@@ -34,6 +34,16 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
+      - name: delete deployments
+        run:
+
+          gh api --paginate "/repos/$repository/deployments" | --jq '.[] | select(.environment = "pull-request-${{ github.event.number }}") | .id' | while read -r deploymentid ;
+          do
+              echo "Deleting deployment $deploymentid"
+              gh api --method DELETE "/repos/$repository/deployments/$deploymentid"
+          done
+        env:
+          GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
       - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
         uses: Azure/cli@v1
