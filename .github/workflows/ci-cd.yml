@@ -24,6 +24,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Bad practice. Not setting the required permissions. 
+    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
+    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
+
     steps:
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
@@ -122,6 +126,12 @@ jobs:
       ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-pr
 
     needs: [build]
+
+    permissions: 
+      contents: read
+      id-token: write
+      pull-requests: write
+      checks: write
     
     steps:
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
@@ -371,9 +381,11 @@ jobs:
       name: DEV
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
-    # Bad practice. Not setting the required permissions. 
-    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
-    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
+
+    permissions: 
+      contents: read
+      id-token: write
+      checks: write  
 
     needs: [build]
 
@@ -406,6 +418,11 @@ jobs:
     environment:
       name: QA
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
+
+    permissions: 
+      contents: read
+      checks: write
+      id-token: write
 
     needs: [dev]
 
