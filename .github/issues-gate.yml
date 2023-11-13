@@ -1,0 +1,17 @@
+Rules:
+- Environment: dev
+  # Time to wait until the gate is evaluated
+  # WaitMinutes: 5
+  Issues:
+    MaxAllowed: 0
+    State: "OPEN"
+    # Repo:  # If omitted current repo will be used
+    # Assignee: ""
+    # Author: ""
+    # Mention: ""
+    # Skip parameter or * for any milestone, value for a specific milestone (NUMBER not label) 
+    # Milestone: "1" # Milestone number (not label)
+    Labels:
+      - bug
+      - show-stopper
+    OnlyCreatedBeforeWorkflowCreated: true
