@@ -61,7 +61,7 @@ runs:
     id: deployARM
     with:
       scope: resourcegroup
-      subscriptionId: ${{ fromJSON(inputs.AzureCredentials).subscriptionId }}
+      subscriptionId: ${{ inputs.subscription-id }}
       resourceGroupName: ${{ inputs.ResourceGroupName }}
       template: ${{ inputs.artifactsName }}/IaC/azuredeploy.json
       deploymentMode: Incremental
