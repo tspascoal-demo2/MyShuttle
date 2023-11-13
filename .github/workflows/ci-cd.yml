@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 # Use github.event.repository.id to have a unique value per repo to avoid conflicts of multiple
-# repositories (eg: forks) deploying this sample. It's kind of hackish, but works for sample purposes and 
+# repositories (eg: forks) deploying this sample. It's kind of hackish, but works for sample purposes and
 # avoids manual replacements by users. Under normal circumstances, you would use a constant.
 env:
   ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-${{ github.job }}
@@ -24,15 +24,15 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Bad practice. Not setting the required permissions. 
+    # Bad practice. Not setting the required permissions.
     # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-        
+        egress-policy: audit
+
     - uses: actions/checkout@v3
 
     - name: 'Check new/updated dependencies for potential vulnerabilities or unwanted licenses'
@@ -75,8 +75,8 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         path: |
-            **/target/*.war 
-            *.sql 
+            **/target/*.war
+            *.sql
             IaC/**/*.*
         name: ${{ env.artifactsName }}
 
@@ -110,7 +110,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=tspascoal-demo2_myshuttle
 
-  pr: 
+  pr:
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
@@ -127,17 +127,17 @@ jobs:
 
     needs: [build]
 
-    permissions: 
+    permissions:
       contents: read
       id-token: write
       pull-requests: write
       checks: write
-    
+
     steps:
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
+          egress-policy: audit
+
       - run: |
           dbPassword=$(</dev/urandom tr -dc '1234567890!*%@#$%abcdefghijklmnopqrstuvxzABCDEFGHIJKLMNOPQRSTUVXZ' | head -c20)
           dbPassword=$dbPassword$(</dev/urandom tr -dc '!*%@#$%' | head -c4)
@@ -147,12 +147,12 @@ jobs:
 
       - run: |
           prNumber=${{github.event.pull_request.number}}
-          echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV 
-          
+          echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV
+
           # WARNING: if you change this, you also need to keep pr-closed workflow in sync
-          echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV 
-          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV           
-          echo "prNumber=$prNumber" >> $GITHUB_ENV 
+          echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV
+          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV
+          echo "prNumber=$prNumber" >> $GITHUB_ENV
         name: update variables for dynamic environment
 
       # we need the local actions and integration tests
@@ -170,7 +170,7 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
+
       - name: add comment to PR with environment info
         uses: marocchino/sticky-pull-request-comment@v2
         if: always()
@@ -206,14 +206,14 @@ jobs:
       actions: read
       contents: read
       security-events: write
- 
+
     if: github.actor != 'dependabot[bot]'
 
     steps:
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-    
+        egress-policy: audit
+
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -232,20 +232,20 @@ jobs:
 
   armscan:
     name: ARM templates and docker file scanning
-    
+
     runs-on: ubuntu-latest
 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
-    # Bad practice. Not setting the required permissions. 
+    # Bad practice. Not setting the required permissions.
     # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
+          egress-policy: audit
+
       - uses: actions/checkout@v3
 
       - name: Test ARM Templates
@@ -261,7 +261,7 @@ jobs:
           directory: IaC/
           output_format: sarif
           soft_fail: true
-          container_user: 1000 
+          container_user: 1000
 
       - name: Upload checkov results
         uses: github/codeql-action/upload-sarif@v2
@@ -286,24 +286,24 @@ jobs:
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: kics-output/results.sarif          
+          sarif_file: kics-output/results.sarif
 
   containerscan:
     name: container scanning
-    
+
     runs-on: ubuntu-latest
 
     if: github.actor != 'dependabot[bot]'
 
-    # Bad practice. Not setting the required permissions. 
+    # Bad practice. Not setting the required permissions.
     # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
     # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -357,7 +357,7 @@ jobs:
           acs-report-enable: true
           fail-build: false
           severity-cutoff: low
-          
+
       - uses: actions/upload-artifact@v3
         with:
           path: '${{ steps.anchore-scan.outputs.sarif }}'
@@ -371,7 +371,7 @@ jobs:
           category: anchore
 
   dev:
-    if: github.ref == 'refs/heads/demos/main' 
+    if: github.ref == 'refs/heads/demos/main'
 
     name: deploy to DEV
     runs-on: ubuntu-latest
@@ -382,17 +382,18 @@ jobs:
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
 
-    permissions: 
+    permissions:
       contents: read
       id-token: write
-      checks: write  
+      checks: write
+      security-events: write
 
     needs: [build]
 
     steps:
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
+        egress-policy: audit
 
     # we need the local actions and integration tests
     - uses: actions/checkout@v3
@@ -412,28 +413,29 @@ jobs:
 
 
   qa:
-    if: github.ref == 'refs/heads/demos/main' 
+    if: github.ref == 'refs/heads/demos/main'
 
     name: deploy to QA
     runs-on: ubuntu-latest
     concurrency: qa
-    
+
     environment:
       name: QA
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
-    permissions: 
+    permissions:
       contents: read
       checks: write
       id-token: write
+      security-events: write
 
     needs: [dev]
 
     steps:
     - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-    
+        egress-policy: audit
+
     # we need the local actions and integration tests
     - uses: actions/checkout@v3
 
