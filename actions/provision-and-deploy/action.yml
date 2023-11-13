@@ -23,10 +23,13 @@ inputs:
     required: true
   client-id:
     required: true
+    description: azure tenant id
   tenant-id:
     required: true
+    description: azure tenant id
   subscription-id:
     required: true
+    description: azure subscription id
 
 outputs:
   webapp-url:
