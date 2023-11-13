@@ -406,7 +406,10 @@ jobs:
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
-        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
 
   qa:
     if: github.ref == 'refs/heads/demos/main' 
@@ -443,4 +446,7 @@ jobs:
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
-        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
