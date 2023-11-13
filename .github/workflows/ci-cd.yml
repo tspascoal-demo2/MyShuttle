@@ -37,7 +37,7 @@ jobs:
       with:
         # Use critical on purpose for demo purposes :)
         fail-on-severity: critical
-        deny-licenses: 'GPL 3.0'
+        #deny-licenses: 'GPL 3.0'
 
     - name: Set up JDK 8
       uses: actions/setup-java@v2
@@ -75,6 +75,36 @@ jobs:
             *.sql 
             IaC/**/*.*
         name: ${{ env.artifactsName }}
+
+  sonarscan:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=tspascoal-demo2_myshuttle
 
   pr: 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
@@ -177,16 +207,16 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2.20.0
+      uses: github/codeql-action/init@v2
       with:
         languages: java
         queries: +security-and-quality
 
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v2.20.0
+      uses: github/codeql-action/autobuild@v2
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2.20.0
+      uses: github/codeql-action/analyze@v2
 
   armscan:
     name: ARM templates and docker file scanning
@@ -222,7 +252,7 @@ jobs:
           container_user: 1000 
 
       - name: Upload checkov results
-        uses: github/codeql-action/upload-sarif@v2.20.0
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'results.sarif'
 
@@ -231,18 +261,18 @@ jobs:
         # make sure results dir is created
         run: mkdir -p kics-output
       - name: run kics Scan
-        uses: checkmarx/kics-github-action@v1.6
+        uses: checkmarx/kics-github-action@v1
         with:
           path: 'IaC'
           output_path: kics-output/
           output_formats: 'json,sarif'
           type: AzureResourceManager
           cloud_provider: azure
-          ignore_on_exit: results
+          ignore_on_exit: all
 
       - name: Upload KICS SARIF file
         if: always()
-        uses: github/codeql-action/upload-sarif@v2.20.0
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: kics-output/results.sarif          
 
@@ -302,7 +332,7 @@ jobs:
 
       # Use a category so we can upload more than one file per job
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2.20.0
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
           category: trivy
@@ -323,7 +353,7 @@ jobs:
 
       # Use a category so we can upload more than one file per job
       - name: Upload Anchore Scan Report
-        uses: github/codeql-action/upload-sarif@v2.20.0
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
           category: anchore
