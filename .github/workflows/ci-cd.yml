@@ -132,6 +132,8 @@ jobs:
       id-token: write
       pull-requests: write
       checks: write
+      actions: read
+      security-events: write      
 
     steps:
       - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
