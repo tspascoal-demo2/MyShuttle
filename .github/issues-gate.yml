@@ -1,5 +1,5 @@
 Rules:
-- Environment: dev
+- Environment: QA
   # Time to wait until the gate is evaluated
   # WaitMinutes: 5
   Issues:

@@ -389,6 +389,7 @@ jobs:
       id-token: write
       checks: write
       security-events: write
+      actions: read
 
     needs: [build]
 
@@ -432,6 +433,7 @@ jobs:
       id-token: write
       checks: write
       security-events: write
+      actions: read
 
     needs: [dev]
 
