@@ -1,5 +1,6 @@
 Rules:
-- Environment: QA
+# This rule applies to any environment
+- Environment:
   # Time to wait until the gate is evaluated
   # WaitMinutes: 5
   Issues:
