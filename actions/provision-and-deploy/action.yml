@@ -127,7 +127,7 @@ runs:
       name: screenshots-${{ github.job }}
 
   - name: ZAP Scan
-    uses: zaproxy/action-baseline@v0.7.0
+    uses: zaproxy/action-baseline@1e1871e84428617b969d4a1f981a8255630d54b0 # v0.10.0
     with:
       target: '${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev'
       allow_issue_writing: false
