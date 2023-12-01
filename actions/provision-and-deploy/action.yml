@@ -52,7 +52,7 @@ runs:
       subscription-id: ${{ inputs.subscription-id }}
 
   - name: Create Resource Group ${{ inputs.ResourceGroupName }} if not exists
-    uses: Azure/cli@v1.0.7
+    uses: Azure/cli@v1.0.8
     with:
       inlineScript: |
           if [ "$(az group exists --name ${{ inputs.ResourceGroupName }})" = "false" ]; then
