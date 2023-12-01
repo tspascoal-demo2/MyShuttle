@@ -3,18 +3,18 @@ name: PR Closed Cleanup
 on:
   pull_request:
     types: [closed]
-    
+
 # WARNING this variable needs to have the same logic as the CICD for PR deployment
 env:
   ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-pr-${{ github.event.number }}
-    
+
 jobs:
   destroyprenvironment:
     name: Destroy PR Environment
 
     runs-on: ubuntu-latest
 
-    permissions: 
+    permissions:
       contents: read
       id-token: write
       pull-requests: write
@@ -25,14 +25,16 @@ jobs:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-    
 
       - name: Get Token To delete environment
         id: get_workflow_token
         uses: peter-murray/workflow-application-token-action@v2
         with:
           application_id: ${{ secrets.PERMISSIONS_APP_ID }}
-          application_private_key: ${{ secrets.PERMISSIONS_APP_PRIVATE_KEY }}    
+          application_private_key: ${{ secrets.PERMISSIONS_APP_PRIVATE_KEY }}
+
+      - name: print actor
+        run: echo '${{ github.actor }}'
 
       - name: delete environment
         run: |
@@ -53,7 +55,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
-      - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists 
+      - name: Delete Resource Group ${{ env.ResourceGroupName }} if exists
         uses: Azure/cli@v1
         with:
           inlineScript: |
