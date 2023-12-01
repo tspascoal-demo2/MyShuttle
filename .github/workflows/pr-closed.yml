@@ -47,7 +47,7 @@ jobs:
       - name: delete deployments
         run: |
 
-          gh api --paginate "/repos/$repository/deployments" | --jq '.[] | select(.environment = "pull-request-${{ github.event.number }}") | .id' | while read -r deploymentid ;
+          gh api --paginate "/repos/$repository/deployments" --jq '.[] | select(.environment = "pull-request-${{ github.event.number }}") | .id' | while read -r deploymentid ;
           do
               echo "Deleting deployment $deploymentid"
               gh api --method DELETE "/repos/$repository/deployments/$deploymentid"
