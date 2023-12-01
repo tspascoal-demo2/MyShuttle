@@ -35,7 +35,7 @@ jobs:
           application_private_key: ${{ secrets.PERMISSIONS_APP_PRIVATE_KEY }}    
 
       - name: delete environment
-        run:
+        run: |
           if gh api /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
             gh api --method DELETE /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
           fi
@@ -43,7 +43,7 @@ jobs:
           GH_TOKEN: ${{ steps.get_workflow_token.outputs.token }}
 
       - name: delete deployments
-        run:
+        run: |
 
           gh api --paginate "/repos/$repository/deployments" | --jq '.[] | select(.environment = "pull-request-${{ github.event.number }}") | .id' | while read -r deploymentid ;
           do
