@@ -36,7 +36,7 @@ jobs:
 
       - name: delete environment
         run: |
-          if gh api /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
+          if gh api /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }} ; then
             gh api --method DELETE /repos/${{ github.repository}}/environments/pull-request-${{ github.event.number }}
           fi
         env:
