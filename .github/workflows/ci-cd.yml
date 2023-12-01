@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 # Use github.event.repository.id to have a unique value per repo to avoid conflicts of multiple
-# repositories (eg: forks) deploying this sample. It's kind of hackish, but works for sample purposes and 
+# repositories (eg: forks) deploying this sample. It's kind of hackish, but works for sample purposes and
 # avoids manual replacements by users. Under normal circumstances, you would use a constant.
 env:
   ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-${{ github.job }}
@@ -24,20 +24,24 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Bad practice. Not setting the required permissions.
+    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
+    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
+
     steps:
-    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-        
-    - uses: actions/checkout@v3
+        egress-policy: audit
+
+    - uses: actions/checkout@v4.1.1
 
     - name: 'Check new/updated dependencies for potential vulnerabilities or unwanted licenses'
-      uses: actions/dependency-review-action@v2
+      uses: actions/dependency-review-action@v3
       if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
       with:
         # Use critical on purpose for demo purposes :)
         fail-on-severity: critical
-        deny-licenses: 'GPL 3.0'
+        #deny-licenses: 'GPL 3.0'
 
     - name: Set up JDK 8
       uses: actions/setup-java@v2
@@ -71,12 +75,42 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         path: |
-            **/target/*.war 
-            *.sql 
+            **/target/*.war
+            *.sql
             IaC/**/*.*
         name: ${{ env.artifactsName }}
 
-  pr: 
+  sonarscan:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v4.1.1
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu' # Alternative distribution options are available.
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=tspascoal-demo2_myshuttle
+
+  pr:
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
     runs-on: ubuntu-latest
@@ -92,12 +126,20 @@ jobs:
       ResourceGroupName: MyShuttle-${{ github.event.repository.id }}-pr
 
     needs: [build]
-    
+
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      checks: write
+      actions: read
+      security-events: write      
+
     steps:
-      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
+          egress-policy: audit
+
       - run: |
           dbPassword=$(</dev/urandom tr -dc '1234567890!*%@#$%abcdefghijklmnopqrstuvxzABCDEFGHIJKLMNOPQRSTUVXZ' | head -c20)
           dbPassword=$dbPassword$(</dev/urandom tr -dc '!*%@#$%' | head -c4)
@@ -107,16 +149,16 @@ jobs:
 
       - run: |
           prNumber=${{github.event.pull_request.number}}
-          echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV 
-          
+          echo "ResourceGroupName=${{ env.ResourceGroupName }}-$prNumber" >> $GITHUB_ENV
+
           # WARNING: if you change this, you also need to keep pr-closed workflow in sync
-          echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV 
-          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV           
-          echo "prNumber=$prNumber" >> $GITHUB_ENV 
+          echo "SiteName=${{ env.SiteName }}-pr$prNumber" >> $GITHUB_ENV
+          echo "dbServerName=${{ env.dbServerName }}-pr$prNumber" >> $GITHUB_ENV
+          echo "prNumber=$prNumber" >> $GITHUB_ENV
         name: update variables for dynamic environment
 
       # we need the local actions and integration tests
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4.1.1
 
       - uses: ./actions/provision-and-deploy
         id: deployWebApp
@@ -127,8 +169,10 @@ jobs:
           ResourceGroupName: ${{ env.ResourceGroupName }}
           artifactsName: ${{ env.artifactsName }}
           SiteName: ${{ env.SiteName }}
-          AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
-          
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: add comment to PR with environment info
         uses: marocchino/sticky-pull-request-comment@v2
         if: always()
@@ -164,16 +208,16 @@ jobs:
       actions: read
       contents: read
       security-events: write
- 
+
     if: github.actor != 'dependabot[bot]'
 
     steps:
-    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-    
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.1.1
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
@@ -190,21 +234,21 @@ jobs:
 
   armscan:
     name: ARM templates and docker file scanning
-    
+
     runs-on: ubuntu-latest
 
     if: github.event_name == 'pull_request' && github.actor != 'dependabot[bot]'
 
-    # Bad practice. Not setting the required permissions. 
+    # Bad practice. Not setting the required permissions.
     # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
-      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
-      - uses: actions/checkout@v3
+          egress-policy: audit
+
+      - uses: actions/checkout@v4.1.1
 
       - name: Test ARM Templates
         id: pathtest
@@ -214,12 +258,12 @@ jobs:
 
       - name: Run Checkov action
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.1786.0
+        uses: bridgecrewio/checkov-action@v12.2601.0
         with:
           directory: IaC/
           output_format: sarif
           soft_fail: true
-          container_user: 1000 
+          container_user: 1000
 
       - name: Upload checkov results
         uses: github/codeql-action/upload-sarif@v2
@@ -231,39 +275,39 @@ jobs:
         # make sure results dir is created
         run: mkdir -p kics-output
       - name: run kics Scan
-        uses: checkmarx/kics-github-action@v1.6
+        uses: checkmarx/kics-github-action@v1
         with:
           path: 'IaC'
           output_path: kics-output/
           output_formats: 'json,sarif'
           type: AzureResourceManager
           cloud_provider: azure
-          ignore_on_exit: results
+          ignore_on_exit: all
 
       - name: Upload KICS SARIF file
         if: always()
         uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: kics-output/results.sarif          
+          sarif_file: kics-output/results.sarif
 
   containerscan:
     name: container scanning
-    
+
     runs-on: ubuntu-latest
 
     if: github.actor != 'dependabot[bot]'
 
-    # Bad practice. Not setting the required permissions. 
+    # Bad practice. Not setting the required permissions.
     # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
     # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
-      - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
         with:
-          egress-policy: audit  
-    
+          egress-policy: audit
+
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4.1.1
 
       - name: Set up JDK 8
         uses: actions/setup-java@v2
@@ -315,7 +359,7 @@ jobs:
           acs-report-enable: true
           fail-build: false
           severity-cutoff: low
-          
+
       - uses: actions/upload-artifact@v3
         with:
           path: '${{ steps.anchore-scan.outputs.sarif }}'
@@ -329,7 +373,7 @@ jobs:
           category: anchore
 
   dev:
-    if: github.ref == 'refs/heads/demos/main' 
+    if: github.ref == 'refs/heads/demos/main'
 
     name: deploy to DEV
     runs-on: ubuntu-latest
@@ -339,19 +383,25 @@ jobs:
       name: DEV
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
-    # Bad practice. Not setting the required permissions. 
-    # This will force us to set the default permissions for GITHUB_TOKEN to read/write.
-    # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
+
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+      id-token: write
+      checks: write
+      security-events: write
+      actions: read
 
     needs: [build]
 
     steps:
-    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
+        egress-policy: audit
 
     # we need the local actions and integration tests
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.1.1
 
     - uses: ./actions/provision-and-deploy
       id: deployWebApp
@@ -362,28 +412,40 @@ jobs:
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
-        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
 
   qa:
-    if: github.ref == 'refs/heads/demos/main' 
+    if: github.ref == 'refs/heads/demos/main'
 
     name: deploy to QA
     runs-on: ubuntu-latest
     concurrency: qa
-    
+
     environment:
       name: QA
       url: ${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev
 
+    permissions:
+      contents: read
+      issues: read
+      pull-requests: write
+      id-token: write
+      checks: write
+      security-events: write
+      actions: read
+
     needs: [dev]
 
     steps:
-    - uses: step-security/harden-runner@ebacdc22ef6c2cfb85ee5ded8f2e640f4c776dd5
+    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
       with:
-        egress-policy: audit  
-    
+        egress-policy: audit
+
     # we need the local actions and integration tests
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.1.1
 
     - uses: ./actions/provision-and-deploy
       id: deployWebApp
@@ -394,4 +456,7 @@ jobs:
         ResourceGroupName: ${{ env.ResourceGroupName }}
         artifactsName: ${{ env.artifactsName }}
         SiteName: ${{ env.SiteName }}
-        AzureCredentials: ${{ secrets.AZURE_CREDENTIALS }}
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+

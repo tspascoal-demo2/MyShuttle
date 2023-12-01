@@ -9,10 +9,10 @@ inputs:
   dbUser:
     description: mysql username
     required: true
-  dbPassword: 
+  dbPassword:
     description: mysql password
     required: true
-  ResourceGroupName: 
+  ResourceGroupName:
     description: Resource group name
     required: true
   artifactsName:
@@ -21,9 +21,15 @@ inputs:
   SiteName:
     description: WebApp name
     required: true
-  AzureCredentials:
-    description: Azure credentials
+  client-id:
     required: true
+    description: azure tenant id
+  tenant-id:
+    required: true
+    description: azure tenant id
+  subscription-id:
+    required: true
+    description: azure subscription id
 
 outputs:
   webapp-url:
@@ -34,33 +40,35 @@ runs:
   using: "composite"
   steps:
   - name: Download Build Artifact
-    uses: actions/download-artifact@v2.0.5
+    uses: actions/download-artifact@v3.0.2
     with:
       path: artifacts
       name: ${{ inputs.artifactsName }}
 
   - uses: azure/login@v1
     with:
-      creds: ${{ inputs.AzureCredentials }}
+      client-id: ${{ inputs.client-id }}
+      tenant-id: ${{ inputs.tenant-id }}
+      subscription-id: ${{ inputs.subscription-id }}
 
-  - name: Create Resource Group ${{ inputs.ResourceGroupName }} if not exists 
-    uses: Azure/cli@v1.0.0
+  - name: Create Resource Group ${{ inputs.ResourceGroupName }} if not exists
+    uses: Azure/cli@v1.0.8
     with:
       inlineScript: |
           if [ "$(az group exists --name ${{ inputs.ResourceGroupName }})" = "false" ]; then
             echo creating ${{ inputs.ResourceGroupName }} resource group
-            az group create --location "eastus2" --name ${{ inputs.ResourceGroupName }} --tags demo=true "ghrepo=${{ github.repository }}" 
+            az group create --location "eastus2" --name ${{ inputs.ResourceGroupName }} --tags demo=true "ghrepo=${{ github.repository }}"
           fi
   - name: Provision Infra using ARM Template
     uses: Azure/arm-deploy@main
     id: deployARM
     with:
       scope: resourcegroup
-      subscriptionId: ${{ fromJSON(inputs.AzureCredentials).subscriptionId }}
+      subscriptionId: ${{ inputs.subscription-id }}
       resourceGroupName: ${{ inputs.ResourceGroupName }}
       template: ${{ inputs.artifactsName }}/IaC/azuredeploy.json
       deploymentMode: Incremental
-      parameters: siteName="${{ inputs.SiteName }}" administratorLogin="${{ inputs.dbUser }}" administratorLoginPassword="${{ inputs.dbPassword }}" dbServerName="${{ inputs.dbServerName }}" 
+      parameters: siteName="${{ inputs.SiteName }}" administratorLogin="${{ inputs.dbUser }}" administratorLoginPassword="${{ inputs.dbPassword }}" dbServerName="${{ inputs.dbServerName }}"
 
   - name: Azure MYSQL Deploy
     uses: Azure/mysql@v1
@@ -86,7 +94,7 @@ runs:
     shell: bash
     run: |
       npx playwright install-deps
-  
+
   - name: install playwright dependencies
     shell: bash
     run: npm ci
@@ -110,16 +118,16 @@ runs:
     uses: EnricoMi/publish-unit-test-result-action@v2
     with:
       files: '${{ env.integration_tests_path}}/reports/**/junit.xml'
-      check_name: Integration Tests ${{ github.job }} 
+      check_name: Integration Tests ${{ github.job }}
 
   - name: Upload Build Artifact
-    uses: actions/upload-artifact@v2
+    uses: actions/upload-artifact@v3
     with:
       path: ${{ env.integration_tests_path}}/screenshots/**
       name: screenshots-${{ github.job }}
 
   - name: ZAP Scan
-    uses: zaproxy/action-baseline@v0.6.1
+    uses: zaproxy/action-baseline@1e1871e84428617b969d4a1f981a8255630d54b0 # v0.10.0
     with:
       target: '${{ steps.deployWebApp.outputs.webapp-url }}/myshuttledev'
       allow_issue_writing: false

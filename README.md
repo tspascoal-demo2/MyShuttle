@@ -38,6 +38,8 @@ The intent of this repo is to show some capabilities:
 
 Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infrastructure as code (IaC) and GitHub Actions. The arm templates create both a WebApp and a MySql server (per environment, each environment is a separate resource group). ARM templates are checked with both [Azure Resource Manager Toolkit](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/test-toolkit), [checkov](https://github.com/bridgecrewio/checkov). (can you spot the issues being flagged?) and [KICS](https://github.com/marketplace/actions/kics-github-action).
 
+The login to azure is performed with [OpenID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure), this allows us to deploy by establishing a trust between the deployment CICD and avoid storing credentials in GitHub
+
 ## Screnshots
 
 CI/CD Workflow
