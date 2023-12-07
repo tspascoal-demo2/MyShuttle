@@ -21,6 +21,15 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
+			"settings": {
+				"java.configuration.runtimes": [
+					{
+						"default": true,
+						"name": "JavaSE-1.8",
+						"path": "/usr/local/sdkman/candidates/java/current"
+					}
+				]
+			},
 			"extensions": [
 				"vscjava.vscode-java-pack",
 				"ms-azuretools.vscode-docker",
@@ -28,7 +37,8 @@
 				"github.vscode-github-actions",
 				"vscjava.vscode-java-test",
 				"GitHub.copilot-chat",
-				"GitHub.copilot"
+				"GitHub.copilot",
+				"vscjava.vscode-maven"
 			]
 		}
 	}
