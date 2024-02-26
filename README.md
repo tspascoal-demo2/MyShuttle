@@ -51,6 +51,32 @@ Releases, Packages and environment in repo view
 
 ![Releases, Packages and environment](./docs/releases-packages-environment.png)
 
+## Database
+
+The application uses a mysql for storage and has the following schema
+
+```mermaid
+erDiagram
+  employees ||--o{ fares : "FOREIGN KEY"
+  employees {
+    int id
+    varchar username
+    varchar password
+  }
+  fares {
+    int id
+    int emp_id
+    varchar pickup
+    varchar dropoff
+    datetime start
+    datetime end
+    int fare_charge
+    int driver_fee
+    tinyint passenger_rating
+    tinyint driver_rating
+  }
+```
+
 ## Trying this out
 
 I have created some [instructions](./docs/configuring.md) if you want to run this sample  on your own repo.
