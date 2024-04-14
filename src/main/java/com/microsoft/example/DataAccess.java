@@ -75,8 +75,6 @@ public class DataAccess
 	public static Employee login(String employeeEmail, String employeePassword) {
 		String query = "SELECT * FROM employees WHERE username = '" + employeeEmail + "' AND password = '" + employeePassword + "'";
 
-		System.out.println("============== running query: " + query);
-
 		try {
 			Statement stmt = theConnection.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
