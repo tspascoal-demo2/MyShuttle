@@ -41,6 +41,8 @@ Uses [ARM templates](), to provision the `DEV` and `QA` environments using Infra
 
 The login to azure is performed with [OpenID Connect](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-azure), this allows us to deploy by establishing a trust between the deployment CICD and avoid storing credentials in GitHub
 
+This uses a secure connection to mysql
+
 ## Screnshots
 
 CI/CD Workflow
