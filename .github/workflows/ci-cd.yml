@@ -29,7 +29,7 @@ jobs:
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
-    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+    - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
       with:
         egress-policy: audit
 
@@ -136,7 +136,7 @@ jobs:
       security-events: write      
 
     steps:
-      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
         with:
           egress-policy: audit
 
@@ -212,7 +212,7 @@ jobs:
     if: github.actor != 'dependabot[bot]'
 
     steps:
-    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+    - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
       with:
         egress-policy: audit
 
@@ -244,7 +244,7 @@ jobs:
     # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
-      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
         with:
           egress-policy: audit
 
@@ -302,7 +302,7 @@ jobs:
     # See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#configuring-the-default-github_token-permissions
 
     steps:
-      - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+      - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
         with:
           egress-policy: audit
 
@@ -396,7 +396,7 @@ jobs:
     needs: [build]
 
     steps:
-    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+    - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
       with:
         egress-policy: audit
 
@@ -440,7 +440,7 @@ jobs:
     needs: [dev]
 
     steps:
-    - uses: step-security/harden-runner@55d479fb1c5bcad5a4f9099a5d9f37c8857b2845
+    - uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142
       with:
         egress-policy: audit
 
