@@ -79,7 +79,7 @@ runs:
       sql-file: ${{ inputs.artifactsName }}/CreateMYSQLDB.sql
 
   - name: Deploy Web App
-    uses: Azure/webapps-deploy@v2
+    uses: Azure/webapps-deploy@v3
     id: deployWebApp
     with:
       app-name: ${{ inputs.SiteName }}
