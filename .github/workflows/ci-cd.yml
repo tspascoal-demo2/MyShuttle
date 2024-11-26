@@ -221,16 +221,16 @@ jobs:
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@v3
       with:
         languages: java
         queries: +security-and-quality
 
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
+      uses: github/codeql-action/autobuild@v3
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@v3
 
   armscan:
     name: ARM templates and docker file scanning
@@ -266,7 +266,7 @@ jobs:
           container_user: 1000
 
       - name: Upload checkov results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'results.sarif'
 
@@ -286,7 +286,7 @@ jobs:
 
       - name: Upload KICS SARIF file
         if: always()
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: kics-output/results.sarif
 
@@ -346,7 +346,7 @@ jobs:
 
       # Use a category so we can upload more than one file per job
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
           category: trivy
@@ -367,7 +367,7 @@ jobs:
 
       # Use a category so we can upload more than one file per job
       - name: Upload Anchore Scan Report
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: ${{ steps.anchore-scan.outputs.sarif }}
           category: anchore
