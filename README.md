@@ -1,7 +1,15 @@
 # Introduction
 
 ![CICD](https://github.com/tspascoal-demo2/MyShuttle/workflows/CICD/badge.svg)
+
+## Open in an Online IDE of your choice
+Skip cloning locally, and start developing in the cloud
+
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/tspascoal-demo2/MyShuttle/tree/demos/main)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/tspascoal-demo2/MyShuttle)
+[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/tspascoal-demo2/MyShuttle)
+[![Open in Codeanywhere](https://codeanywhere.com/img/open-in-codeanywhere-btn.svg)](https://app.codeanywhere.com/#https://github.com/tspascoal-demo2/MyShuttle)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/tspascoal-demo2/MyShuttle)
 
 MyShuttle is a sample Java/JEE application that provides booking system, admin portal and a control system for the drivers. The application uses entirely open source software including Linux, Java, Apache, and MySQL which creates a web front end, an order service, and an integration service.
 
